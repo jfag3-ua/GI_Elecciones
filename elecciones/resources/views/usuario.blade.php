@@ -3,10 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing</title>
+    <title>Usuario</title>
 </head>
 <body>
-    <h1>Landing</h1>
+    <h1>Usuario</h1>
     <a href="{{ route('landing') }}">Landing</a> |
     <a href="{{ route('inicio') }}">Iniciar sesión</a> |
     <a href="{{ route('registro') }}">Registrarse</a> |

@@ -8,8 +8,12 @@
 <body>
     <h1>Iniciar sesión</h1>
     <a href="{{ route('landing') }}">Landing</a> |
+    <a href="{{ route('inicio') }}">Iniciar sesión</a> |
     <a href="{{ route('registro') }}">Registrarse</a> |
     <a href="{{ route('voto') }}">Votar</a> |
-    <a href="{{ route('encuestas') }}">Encuestas</a>
+    <a href="{{ route('encuestas') }}">Encuestas</a> |
+    <a href="{{ route('resultados') }}">Resultados</a> |
+    <a href="{{ route('administracion') }}">Administrar</a> |
+    <a href="{{ route('usuario') }}">Usuario</a>
 </body>
 </html>
