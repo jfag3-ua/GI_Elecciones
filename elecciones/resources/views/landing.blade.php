@@ -1,8 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Elecciones Valencianas')
+@section('title', 'Eleccions Valencianes')
 
 @section('content')
-    <h1>Landing</h1>
-    <p>Aquí se dará la bienvenida al sistema de voto</p>
+    <h2>Eleccions a les Corts Valencianes</h2>
+    <p class="notice">Aquí se dará la bienvenida al sistema de voto.</p>
+    <img src="/img/Corts_Valencianes.png" />
 @endsection

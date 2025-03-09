@@ -3,23 +3,25 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>@yield('title', 'Elecciones Valencianas')</title> <!-- Título por defecto -->
+    <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
+    <link rel="stylesheet" href="/css/custom.css">
 </head>
 <body>
     <header>
         <nav>
-            <a href="{{ route('landing') }}">Landing</a> |
+            <a href="{{ route('landing') }}">Bienvenido</a>
             @guest
-                <a href="{{ route('inicio') }}">Iniciar sesión</a> |
+                <a href="{{ route('inicio') }}">Iniciar sesión</a>
                 <a href="{{ route('registro') }}">Registrarse</a>
             @endguest
             @auth
-                <a href="{{ route('voto') }}">Votar</a> |
-                <a href="{{ route('encuestas') }}">Encuestas</a> |
-                <a href="{{ route('resultados') }}">Resultados</a> |
-                <a href="{{ route('administracion') }}">Administrar</a> |
-                <a href="{{ route('usuario') }}">Usuario</a> |
+                <a href="{{ route('voto') }}">Votar</a>
+                <a href="{{ route('encuestas') }}">Encuestas</a>
+                <a href="{{ route('resultados') }}">Resultados</a>
+                <a href="{{ route('administracion') }}">Administrar</a>
+                <a href="{{ route('usuario') }}">Usuario</a>
                 <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                     @csrf
                     <button type="submit">Cerrar sesión</button>

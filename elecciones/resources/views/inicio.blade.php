@@ -3,7 +3,7 @@
 @section('title', 'Iniciar sesión')
 
 @section('content')
-    <h1>Iniciar sesión</h1>
+    <h2>Iniciar sesión</h2>
     <form action="{{ route('login') }}" method="POST">
         @csrf
         <div>

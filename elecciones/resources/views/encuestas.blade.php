@@ -3,6 +3,6 @@
 @section('title', 'Encuestas')
 
 @section('content')
-    <h1>Encuestas</h1>
-    <p>Aquí se podrán ver las encuestas</p>
+    <h2>Encuestas</h2>
+    <p class="notice">Aquí se podrán ver las encuestas.</p>
 @endsection

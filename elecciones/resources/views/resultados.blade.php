@@ -3,6 +3,6 @@
 @section('title', 'Resultados')
 
 @section('content')
-    <h1>Resultados</h1>
-    <p>Aquí se podrán ver los resultados de las elecciones</p>
+    <h2>Resultados</h2>
+    <p class="notice">Aquí se podrán ver los resultados de las elecciones.</p>
 @endsection
