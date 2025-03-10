@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Elecciones Valencianas')</title> <!-- Título por defecto -->
+    <title>@yield('title', 'Eleccions Valencianas')</title> <!-- Título por defecto -->
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
     <link rel="stylesheet" href="/css/custom.css">
 </head>
@@ -17,7 +17,9 @@
                 <a href="{{ route('registro') }}">Registrarse</a>
             @endguest
             @auth
-                <a href="{{ route('voto') }}">Votar</a>
+                @if(session()->get('tipo_usuario') === 'user')
+                    <a href="{{ route('voto') }}">Votar</a>
+                @endif
                 <a href="{{ route('encuestas') }}">Encuestas</a>
                 <a href="{{ route('resultados') }}">Resultados</a>
                 <a href="{{ route('administracion') }}">Administrar</a>
@@ -42,4 +44,9 @@
         @yield('content') <!-- Aquí se mostrará el contenido de cada vista específica -->
     </main>
 </body>
+<footer>
+    <div class="footer-content">
+        <p>&copy; TaxFraud. Todos los derechos reservados.</p>
+    </div>
+</footer>
 </html>

@@ -12,7 +12,7 @@ class AuthController extends Controller
     // Mostrar el formulario de inicio de sesión
     public function showLoginForm()
     {
-        return view('login');
+        return view('inicio');
     }
 
     // Procesar el inicio de sesión
@@ -23,20 +23,30 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Buscar al usuario en la base de datos usando el NIF
+        // Buscar al usuario en la base de datos usando el NIF (primero comprobamos si es administrador)
+        $admin = DB::table('administrador')->where('NIF', $request->nif)->first();
+
+        if ($admin && $admin->CONTRASENYA === $request->password) {
+            // Si el usuario existe y la contraseña es correcta, se autentica manualmente
+            Auth::loginUsingId($admin);  // Usamos NIF como identificador
+            session()->put('tipo_usuario', 'admin'); // Guardamos el tipo de usuario en sesión
+            return redirect()->route('administracion'); // Redirige a la página que elijas
+        }
+
+        // Si no, comprobamos si es usuario
         $user = DB::table('usuario')->where('NIF', $request->nif)->first();
 
         if ($user && $user->CONTRASENYA === $request->password) {
             // Si el usuario existe y la contraseña es correcta, se autentica manualmente
             Auth::loginUsingId($user->NIF);  // Usamos NIF como identificador
-
+            session()->put('tipo_usuario', 'user'); // Guardamos el tipo de usuario en sesión
             return redirect()->route('voto'); // Redirige a la página que elijas
-        } else {
-            // Si no se encuentra el usuario o la contraseña es incorrecta
-            return back()->withErrors([
-                'nif' => 'El NIF o la contraseña son incorrectos.',
-            ]);
         }
+
+        // Si no se encuentra el usuario o la contraseña es incorrecta
+        return back()->withErrors([
+            'nif' => 'El NIF o la contraseña son incorrectos.',
+        ]);
     }
 
     // Logout

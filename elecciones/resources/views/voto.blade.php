@@ -4,5 +4,5 @@
 
 @section('content')
     <h2>Votar</h2>
-    <p class="notice">Aquí un usuario podrá votar.</p>
+    <p class="notice">Aquí un usuario podrá votar (un administrador no puede votar).</p>
 @endsection

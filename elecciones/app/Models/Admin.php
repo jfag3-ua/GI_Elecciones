@@ -5,14 +5,12 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
-class User extends Authenticatable
+class Admin extends Authenticatable
 {
     use Notifiable;
 
-    protected $table = 'usuario';  // Asegúrate de que el nombre de la tabla es correcto
-
-    // Definir qué campo se utiliza para la autenticación
-    public $primaryKey = 'NIF'; // Usamos NIF como la clave primaria
+    protected $table = 'administrador';  // Asigna la tabla correcta
+    public $primaryKey = 'NIF'; // Clave primaria
 
     protected $fillable = [
         'NIF', 'CONTRASENYA',
@@ -22,7 +20,6 @@ class User extends Authenticatable
         'CONTRASENYA', // Ocultar la contraseña en la respuesta JSON
     ];
 
-    // Definir cómo se autentica por NIF en lugar de email
     public function getAuthIdentifierName()
     {
         return 'NIF';
@@ -33,4 +30,3 @@ class User extends Authenticatable
         return $this->CONTRASENYA;
     }
 }
-

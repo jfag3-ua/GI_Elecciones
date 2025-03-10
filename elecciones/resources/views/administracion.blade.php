@@ -4,5 +4,5 @@
 
 @section('content')
     <h2>Administrar</h2>
-    <p class="notice">Aquí un administrador podrá realizar tareas de control y administración.</p>
+    <p class="notice">Aquí un administrador podrá realizar tareas de control y administración (un administrador no puede votar).</p>
 @endsection
