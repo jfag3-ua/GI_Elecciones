@@ -22,6 +22,9 @@
                 @endif
                 <a href="{{ route('encuestas') }}">Encuestas</a>
                 <a href="{{ route('resultados') }}">Resultados</a>
+                @if(session()->get('tipo_usuario') === 'admin')
+                    <a href="{{ route('voto') }}">Votar</a>
+                @endif
                 <a href="{{ route('administracion') }}">Administrar</a>
                 <a href="{{ route('usuario') }}">Usuario</a>
                 <form action="{{ route('logout') }}" method="POST" style="display:inline;">

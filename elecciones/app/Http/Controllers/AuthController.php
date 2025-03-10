@@ -28,7 +28,7 @@ class AuthController extends Controller
 
         if ($admin && $admin->CONTRASENYA === $request->password) {
             // Si el usuario existe y la contraseña es correcta, se autentica manualmente
-            Auth::loginUsingId($admin);  // Usamos NIF como identificador
+            Auth::loginUsingId($admin->NIF);  // Usamos NIF como identificador
             session()->put('tipo_usuario', 'admin'); // Guardamos el tipo de usuario en sesión
             return redirect()->route('administracion'); // Redirige a la página que elijas
         }
