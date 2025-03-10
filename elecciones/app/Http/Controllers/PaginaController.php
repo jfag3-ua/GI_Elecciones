@@ -39,4 +39,12 @@ class PaginaController extends Controller
     public function usuario() {
         return view('usuario');
     }
+
+    public function candidato() {
+        return view('candidato');
+    }
+
+    public function candidatura(){
+        return view('candidatura');
+    }
 }

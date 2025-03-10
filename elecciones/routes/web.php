@@ -16,3 +16,6 @@ Route::get('/encuestas', [PaginaController::class, 'encuestas'])->name('encuesta
 Route::get('/resultados', [PaginaController::class, 'resultados'])->name('resultados');
 Route::get('/administracion', [PaginaController::class, 'administracion'])->name('administracion');
 Route::get('/usuario', [PaginaController::class, 'usuario'])->name('usuario');
+Route::get('/candidato', [PaginaController::class, 'candidato'])->name('candidato');
+Route::get('/candidatura', [PaginaController::class, 'candidatura'])->name('candidatura');
+
