@@ -3,19 +3,12 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use App\Models\Admin;
+use App\Models\User; // Asumiendo tu modelo se llama User
 
 class AuthController extends Controller
 {
-    // Mostrar el formulario de inicio de sesión
-    public function showLoginForm()
-    {
-        return view('inicio');
-    }
-
-    // Procesar el inicio de sesión
     public function login(Request $request)
     {
         $request->validate([
@@ -23,37 +16,40 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
-        // Buscar al usuario en la base de datos usando el NIF (primero comprobamos si es administrador)
-        $admin = DB::table('administrador')->where('NIF', $request->nif)->first();
-
+        // Intentar loguear como admin
+        $admin = Admin::where('NIF', $request->nif)->first();
         if ($admin && $admin->CONTRASENYA === $request->password) {
-            // Si el usuario existe y la contraseña es correcta, se autentica manualmente
-            Auth::loginUsingId($admin->NIF);  // Usamos NIF como identificador
-            session()->put('tipo_usuario', 'admin'); // Guardamos el tipo de usuario en sesión
-            return redirect()->route('administracion'); // Redirige a la página que elijas
+            \Log::info('Entró en la validación del administrador con NIF: ' . $admin->NIF);
+            // o si usas hashing => Hash::check($request->password, $admin->CONTRASENYA)
+            Auth::guard('admin')->login($admin); // o ->loginUsingId($admin->NIF);
+            \Log::info('Auth::guard("admin")->check(): ' . (Auth::guard('admin')->check() ? 'true' : 'false'));
+            session()->put('tipo_usuario', 'admin');
+            return redirect()->route('administracion');
         }
 
-        // Si no, comprobamos si es usuario
-        $user = DB::table('usuario')->where('NIF', $request->nif)->first();
-
+        // Si no es admin, intentar como user
+        $user = User::where('NIF', $request->nif)->first();
         if ($user && $user->CONTRASENYA === $request->password) {
-            // Si el usuario existe y la contraseña es correcta, se autentica manualmente
-            Auth::loginUsingId($user->NIF);  // Usamos NIF como identificador
-            session()->put('tipo_usuario', 'user'); // Guardamos el tipo de usuario en sesión
-            return redirect()->route('voto'); // Redirige a la página que elijas
+            Auth::guard('web')->login($user);
+            \Log::info('Redirigió a la página de administración. Auth::check: ' . (Auth::check() ? 'true' : 'false'));
+            session()->put('tipo_usuario', 'user');
+            return redirect()->route('voto');
         }
 
-        // Si no se encuentra el usuario o la contraseña es incorrecta
-        return back()->withErrors([
-            'nif' => 'El NIF o la contraseña son incorrectos.',
-        ]);
+        // Si no coincide con ninguno
+        return back()->withErrors(['nif' => 'El NIF o la contraseña son incorrectos.']);
     }
 
-    // Logout
     public function logout()
     {
-        Auth::logout();
+        // Dependiendo de a quién quieras desloguear
+        //  - Auth::guard('web')->logout();
+        //  - Auth::guard('admin')->logout();
+        // O ambos:
+        Auth::guard('web')->logout();
+        Auth::guard('admin')->logout();
+
+        session()->forget('tipo_usuario');
         return redirect()->route('inicio');
     }
-
 }
