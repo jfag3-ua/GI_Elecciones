@@ -30,11 +30,11 @@ class PaginaController extends Controller
     }
 
     public function resultados() {
-        if (!file_exists(storage_path('/app/Datasets/elections_dataset.csv'))) {
+        if (!file_exists(storage_path('/app/datasets/elections_dataset.csv'))) {
             return redirect()->route('inicio')->with('error', 'No se ha cargado el dataset');
         }
 
-        $csv = Reader::createFromPath(storage_path('/app/Datasets/elections_dataset.csv'), 'r');
+        $csv = Reader::createFromPath(storage_path('/app/datasets/elections_dataset.csv'), 'r');
         $csv->setHeaderOffset(0); // Usa la primera fila como encabezados
     
         $data = [];
