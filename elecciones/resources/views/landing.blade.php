@@ -1,15 +1,9 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Landing</title>
-</head>
-<body>
-    <h1>Landing</h1>
-    <a href="{{ route('inicio') }}">Iniciar sesión</a> |
-    <a href="{{ route('registro') }}">Registrarse</a> |
-    <a href="{{ route('voto') }}">Votar</a> |
-    <a href="{{ route('encuestas') }}">Encuestas</a>
-</body>
-</html>
+@extends('layouts.app')
+
+@section('title', 'Eleccions Valencianes')
+
+@section('content')
+    <h2>Eleccions a les Corts Valencianes</h2>
+    <p class="notice">Aquí se dará la bienvenida al sistema de voto.</p>
+    <img src="/img/Corts_Valencianes.png" />
+@endsection
