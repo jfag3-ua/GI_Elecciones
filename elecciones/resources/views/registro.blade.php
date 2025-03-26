@@ -1,15 +1,8 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Registrarse</title>
-</head>
-<body>
-    <h1>Registrarse</h1>
-    <a href="{{ route('landing') }}">Landing</a> |
-    <a href="{{ route('inicio') }}">Iniciar sesión</a> |
-    <a href="{{ route('voto') }}">Votar</a> |
-    <a href="{{ route('encuestas') }}">Encuestas</a>
-</body>
-</html>
+@extends('layouts.app')
+
+@section('title', 'Registrarse')
+
+@section('content')
+    <h2>Registrarse</h2>
+    <p class="notice">Aquí una persona censada (que esté en la tabla censo) podrá registrarse, de forma que se introduzca en la tabla usuario.</p>
+@endsection
