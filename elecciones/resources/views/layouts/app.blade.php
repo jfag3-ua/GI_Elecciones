@@ -18,6 +18,7 @@
             @guest('web')
                 <a href="{{ route('inicio') }}">Iniciar sesión</a>
                 <a href="{{ route('registro') }}">Registrarse</a>
+                <a href="{{ route('resultados') }}">Resultados</a>
             @endguest
         @endguest
 
