@@ -7,60 +7,91 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+Instrucciones proyecto Gestión de la Información
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+-	ACCESO MÁQUINA VIRTUAL
+-	Nuestro proyecto/programa vamos a alojarlo en una máquina virtual. Esta máquina virtual la hemos creado en Azure. ¿Cómo trabajar con ella? 
+o	Ejecutar el siguiente comando en la terminal:
+	ssh taxfraud@20.56.154.249
+	Contraseña: Contrasena1234
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+-	ACCESO BASE DE DATOS LOCAL
+-	Nuestro proyecto trabajará con 2 bases de datos: una BD la crearemos dentro de la máquina virtual, a esa la llamaremos BD local (es local porque el programa, que está en la misma máquina virtual, accede a esa BD, que también está en la máquina virtual)
+-	Para acceder a la BD local hay que ejecutar el siguiente comando en la terminal de la máquina virtual:
+"mysql". Si no funciona, escribir:
+	mysql –u Alberto –p
+	Contraseña: Contrasena1234
+	use elecciones;
+-	También se puede acceder a la BD local que está en la máquina virtual mediante comando desde otro ordenador:
+	mysql -u Alberto -h 20.56.154.249 -p
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+-	ACCESO BASE DE DATOS REMOTA
+-	Para acceder a la BD remota hay que descargarse el programa Mysql Workbench y añadir una dirección, poniendo: 
+	Connection: taxfraud.mysql.database.azure.com
+	Hostname: taxfraud.mysql.database.azure.com
+	Puerto: 3306
+	Usuario: Alberto
+	Contraseña: Contrasena1234
 
-## Learning Laravel
+-	POBLAR TABLAS CON 1 MILLÓN Y 2 MILLONES DE DATOS FAKE
+-	Para poblar las 2 tablas (direcciones y censo) de la base de datos remota con nuestros datos fake-generados, hemos utilizado los siguientes comandos:
+o	mysql --host=taxfraud.mysql.database.azure.com --user=Alberto --password=Contrasena1234 --local-infile=1
+o	use elecciones;
+LOAD DATA LOCAL INFILE '/home/taxfraud/script/direcciones.csv'
+INTO TABLE elecciones.direcciones
+FIELDS TERMINATED BY ',' 
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 LINES;
+o	La ruta se puede modificar según dónde hayamos guardado el .csv
+o	Es importante ignorar la primera línea de direcciones.csv dado que contiene un encabezado con los nombres de cada columna.
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+o	Para poblar censo de forma remota hemos usado:
+o	php -d mysqli.allow_local_infile=1 /home/taxfraud/script/insertarDatosCensoRemoto.php
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-	PARA TRABAJAR CON EL PROYECTO LARAVEL
+-	Modificar el .env, que está como ignore:
+o	DB_CONNECTION=mysql
+o	DB_HOST=20.56.154.249
+o	DB_PORT=3306
+o	DB_DATABASE=elecciones
+o	DB_USERNAME=Alberto
+o	DB_PASSWORD=Contrasena1234
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+INSTALAR PHP:
+sudo apt update
+sudo apt install php8.3 php8.3-bcmath php8.3-mbstring \
+php8.3-xml php8.3-mysql php8.3-curl
 
-## Laravel Sponsors
+INSTALAR COMPOSER
+sudo apt install curl
+curl https://getcomposer.org/download/2.8.4/composer.phar \
+--output composer
+sudo mv composer /usr/local/bin/composer
+sudo chmod +x /usr/local/bin/composer
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+INSTALAR MYSQL
+sudo apt install mysql-server
 
-### Premium Partners
+CLONAR REPOSITORIO
+git clone https://github.com/jfag3-ua/GI_Elecciones.git
+cd GI_Elecciones/elecciones
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+INSTALAR DEPENDENCIAS
+composer install
 
-## Contributing
+CONFIGURAR .ENV
+cp .env.example .env
+nano .env
+(de momento cambiáis la línea 30 SESSION_DRIVER=database a SESSION_DRIVER=file)
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+GENERAR LA CLAVE DE LA APLICACIÓN
+php artisan key:generate
+(si os da problemas de permisos lo hacéis con sudo)
 
-## Code of Conduct
+ARRANCAR SERVIDOR
+php artisan serve
+(Laravel se ejecutará en el puerto 8000)
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+ABRIR NAVEGADOR Y PONER DIRECCIÓN
+localhost:8000
