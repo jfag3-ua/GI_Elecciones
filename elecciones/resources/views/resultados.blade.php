@@ -67,13 +67,20 @@
                     </tr>
 
                     @foreach ($info_votos[$year] as $candidatura)
-                            @foreach ( $candidatura as $key => $value)
-                                <tr>
-                                    @foreach ($value as $index =>$result)
-                                        <td>{{ $result }}</td>
-                                    @endforeach
-                                </tr>
-                            @endforeach
+                        @php
+                            $candidatos = $candidatura['Candidato'] ?? [];
+                            $votos = $candidatura['Votos'] ?? [];
+                            $escanos = $candidatura['Escanos'] ?? [];
+                            $count = max(count($candidatos), count($votos), count($escanos));
+                        @endphp
+
+                        @for ($i = 0; $i < $count; $i++)
+                            <tr>
+                                <td>{{ $candidatos[$i] ?? '/NA' }}</td>
+                                <td>{{ $votos[$i] ?? 0 }}</td>
+                                <td>{{ $escanos[$i] ?? 0 }}</td>
+                            </tr>
+                        @endfor
                     @endforeach
                 </table>
             @endif
