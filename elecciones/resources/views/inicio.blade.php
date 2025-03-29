@@ -7,8 +7,8 @@
     <form action="{{ route('login') }}" method="POST">
         @csrf
         <div>
-            <label for="nif">NIF</label>
-            <input type="text" name="nif" id="nif" required>
+            <label for="NombreUsuario">Nombre de usuario</label>
+            <input type="text" name="NombreUsuario" id="NombreUsuario" required>
         </div>
         <div>
             <label for="password">Contraseña</label>
