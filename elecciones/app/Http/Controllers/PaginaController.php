@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use League\Csv\Reader;
 
 class PaginaController extends Controller
@@ -81,7 +82,22 @@ class PaginaController extends Controller
         return view('administracion');
     }
 
-    public function usuario() {
-        return view('usuario');
+    public function usuario()
+    {
+        // Obtener el usuario autenticado
+        $usuario = auth()->user();
+
+        // Obtener la información del censo basándonos en el NIF del usuario
+        $censo = DB::table('censo')
+                    ->where('NIF', $usuario->NIF)
+                    ->first();
+
+        // Obtener la dirección asociada al usuario (por IDDIRECCION)
+        $direccion = DB::table('direcciones')
+                    ->where('IDDIRECCION', $censo->IDDIRECCION)
+                    ->first();
+
+        // Pasar los datos a la vista
+        return view('usuario', compact('usuario', 'censo', 'direccion'));
     }
 }
