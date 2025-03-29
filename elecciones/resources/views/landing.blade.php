@@ -3,13 +3,14 @@
 @section('title', 'Eleccions Valencianes')
 
 @section('content')
-    <h2>Eleccions a Les Corts Valencianes</h2>
-    <p class="notice">
-        Bienvenido al sistema de voto electrónico de <b>Les Corts Valencianes</b>.
-    </p>
-    <p class="notice">
-        Ten en cuenta que para poder votar necesitas iniciar sesión.
-        Si aún no tienes una cuenta, debes registrarte, para lo cual es imprescindible que estés censado, si no, el sistema no te permitirá registrarte.
-    </p>
+    <article>
+        <h3>
+            Bienvenido al sistema de voto electrónico de Les Corts Valencianes
+        </h3>
+        <p>
+            Ten en cuenta que para poder votar necesitas iniciar sesión.
+            Si aún no tienes una cuenta, debes registrarte, para lo cual es imprescindible que estés censado, si no, el sistema no te permitirá registrarte.
+        </p>
+    </article>
     <img src="/img/Corts_Valencianes.png" />
 @endsection
