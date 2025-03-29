@@ -18,6 +18,7 @@ o	Ejecutar el siguiente comando en la terminal:
 -	ACCESO BASE DE DATOS LOCAL
 -	Nuestro proyecto trabajará con 2 bases de datos: una BD la crearemos dentro de la máquina virtual, a esa la llamaremos BD local (es local porque el programa, que está en la misma máquina virtual, accede a esa BD, que también está en la máquina virtual)
 -	Para acceder a la BD local hay que ejecutar el siguiente comando en la terminal de la máquina virtual:
+"mysql". Si no funciona, escribir:
 	mysql –u Alberto –p
 	Contraseña: Contrasena1234
 	use elecciones;
@@ -57,3 +58,40 @@ o	DB_DATABASE=elecciones
 o	DB_USERNAME=Alberto
 o	DB_PASSWORD=Contrasena1234
 
+INSTALAR PHP:
+sudo apt update
+sudo apt install php8.3 php8.3-bcmath php8.3-mbstring \
+php8.3-xml php8.3-mysql php8.3-curl
+
+INSTALAR COMPOSER
+sudo apt install curl
+curl https://getcomposer.org/download/2.8.4/composer.phar \
+--output composer
+sudo mv composer /usr/local/bin/composer
+sudo chmod +x /usr/local/bin/composer
+
+INSTALAR MYSQL
+sudo apt install mysql-server
+
+CLONAR REPOSITORIO
+git clone https://github.com/jfag3-ua/GI_Elecciones.git
+cd GI_Elecciones/elecciones
+
+INSTALAR DEPENDENCIAS
+composer install
+
+CONFIGURAR .ENV
+cp .env.example .env
+nano .env
+(de momento cambiáis la línea 30 SESSION_DRIVER=database a SESSION_DRIVER=file)
+
+GENERAR LA CLAVE DE LA APLICACIÓN
+php artisan key:generate
+(si os da problemas de permisos lo hacéis con sudo)
+
+ARRANCAR SERVIDOR
+php artisan serve
+(Laravel se ejecutará en el puerto 8000)
+
+ABRIR NAVEGADOR Y PONER DIRECCIÓN
+localhost:8000
