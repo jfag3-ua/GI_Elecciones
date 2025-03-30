@@ -17,7 +17,7 @@
             @guest('admin')
                 @guest('web')
                     <a href="{{ route('resultados') }}" class="{{ request()->routeIs('resultados') ? 'current' : '' }}">Resultados</a>
-                    <a href="{{ route('encuestas') }}" class="{{ request()->routeIs('encuestas') ? 'current' : '' }}">Encuestas</a>
+                    <a href="{{ route('predicciones') }}" class="{{ request()->routeIs('predicciones') ? 'current' : '' }}">Predicciones</a>
                     <a href="{{ route('inicio') }}" class="{{ request()->routeIs('inicio') ? 'current' : '' }}">Iniciar sesión</a>
                     <a href="{{ route('registro2.form') }}" class="{{ request()->routeIs('registro2.form') ? 'current' : '' }}">Registrarse</a>
                 @endguest
@@ -27,7 +27,7 @@
             @auth('admin')
                 <a href="{{ route('administracion') }}" class="{{ request()->routeIs('administracion') ? 'current' : '' }}">Administrar</a>
                 <a href="{{ route('resultados') }}" class="{{ request()->routeIs('resultados') ? 'current' : '' }}">Resultados</a>
-                <a href="{{ route('encuestas') }}" class="{{ request()->routeIs('encuestas') ? 'current' : '' }}">Encuestas</a>
+                <a href="{{ route('predicciones') }}" class="{{ request()->routeIs('predicciones') ? 'current' : '' }}">Predicciones</a>
                 <a href="{{ route('usuario') }}" class="{{ request()->routeIs('usuario') ? 'current' : '' }}">Usuario</a>
                 <form action="{{ route('logout') }}" method="POST" style="display:inline;">
                     @csrf
@@ -39,7 +39,7 @@
             @auth('web')
                 <a href="{{ route('voto') }}" class="{{ request()->routeIs('voto') ? 'current' : '' }}">Votar</a>
                 <a href="{{ route('resultados') }}" class="{{ request()->routeIs('resultados') ? 'current' : '' }}">Resultados</a>
-                <a href="{{ route('encuestas') }}" class="{{ request()->routeIs('encuestas') ? 'current' : '' }}">Encuestas</a>
+                <a href="{{ route('predicciones') }}" class="{{ request()->routeIs('predicciones') ? 'current' : '' }}">Predicciones</a>
                 <a href="{{ route('usuario') }}" class="{{ request()->routeIs('usuario') ? 'current' : '' }}">Usuario</a>
             @endauth
         </nav>
