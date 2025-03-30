@@ -3,81 +3,211 @@
 @section('title', 'Resultados')
 
 @section('content')
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Datos de Elecciones</title>
-        <style>
-            table {
-                width: 100%;
-                border-collapse: collapse;
-                margin-bottom: 20px;
-            }
-            th, td {
-                border: 1px solid black;
-                padding: 8px;
-                text-align: left;
-            }
-            th {
-                background-color: #f2f2f2;
-            }
-        </style>
-    </head>
-    <body>
-        <h1>Información General de Elecciones</h1>
-        @foreach ($years as $year)
-            @if (isset($info_general[$year]))
-                <h2>Año: {{ $year }}</h2>
-                <table>
-                    <tr>
-                        <th>Censo</th>
-                        <th>Votantes</th>
-                        <th>Abstenciones</th>
-                        <th>Válidos</th>
-                        <th>Nulos</th>
-                        <th>A Candidaturas</th>
-                        <th>En Blanco</th>
-                    </tr>
-                    <tr>
-                        @foreach ($info_general[$year] as $votos)
-                            <td>{{ $votos['Censo'] ?? 0 }}</td>
-                            <td>{{ $votantes = $votos['Votantes'] ?? 0 }}</td>
-                            <td>{{ $votos['Abstenciones'] ?? 0 }}</td>
-                            <td>{{ $voto_valido = $votos['Validos'] ?? 0 }}</td>
-                            <td>{{ $votantes - $voto_valido }}</td>
-                            <td>{{ $votos['A candidaturas'] ?? 0 }}</td>
-                            <td>{{ $votos['En blanco'] ?? 0 }}</td>
-                        @endforeach
-                    </tr>
-                </table>
-            @endif
-        @endforeach
-        
-        <h1>Resultados por Candidato</h1>
-        @foreach ($years as $year)
-            @if (isset($info_votos[$year]))
-                <h2>Año: {{ $year }}</h2>
-                <table>
-                    <tr>
-                        <th>Candidato</th>
-                        <th>Votos</th>
-                        <th>Escaños</th>
-                    </tr>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .label-column {
+            text-align: left;
+        }
+        .divider-row {
+            border-bottom: 3px solid black;
+        }
+        .text-porcentaje, .text-escano {
+            color: #8c0c34;
+            font-weight: bold;
+        }
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+    </style>
 
-                    @foreach ($info_votos[$year] as $candidatura)
-                            @foreach ( $candidatura as $key => $value)
-                                <tr>
-                                    @foreach ($value as $index =>$result)
-                                        <td>{{ $result }}</td>
-                                    @endforeach
-                                </tr>
-                            @endforeach
-                    @endforeach
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    @php
+        $votantes = [];
+    @endphp
+
+    <h2>Resultados</h2>
+
+    @foreach ($years as $year)
+        <h3>Información general sobre las elecciones de {{ $year }}</h3>
+
+        @php
+            $data = json_encode($winners[$year] ?? []);
+        @endphp
+
+        @if (isset($info_general[$year]))
+            @foreach ($info_general[$year] as $votos)
+                @php
+                    $votantes[$year] = $votos['Votantes'] ?? 0;
+                @endphp
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="3">Información general sobre las elecciones</th>
+                            <th>Número</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr class="odd">
+                            <td rowspan="2">Censo</td>
+                            <td class="text-numero" rowspan="2">
+                                {{ number_format($votos['Censo'] ?? 0, 0, ',', '.') }}
+                            </td>
+
+                            <td>Votantes</td>
+                            <td class="text-numero">
+                                {{ number_format($votos['Votantes'] ?? 0, 0, ',', '.') }}
+                            </td>
+                            <td class="text-porcentaje">
+                                {{ number_format(($votos['Votantes'] ?? 0) * 100 / ($votos['Censo'] ?? 0), 2, ',', '.') }}%
+                            </td>
+                        </tr>
+
+                        <tr class="even">
+                            <td>Abstenciones</td>
+                            <td class="text-numero">
+                                {{ number_format($votos['Abstenciones'] ?? 0, 0, ',', '.') }}
+                            </td>
+                            <td class="text-porcentaje">
+                                {{ number_format(($votos['Abstenciones'] ?? 0) * 100 / ($votos['Censo'] ?? 0), 2, ',', '.') }}%
+                            </td>
+                        </tr>
+
+                        <tr class="odd">
+                            <td rowspan="2">Votos Válidos</td>
+                            <td class="text-numero" rowspan="2">
+                                {{ number_format($votos['Validos'] ?? 0, 0, ',', '.') }}
+                            </td>
+
+                            <td>A candidaturas</td>
+                            <td class="text-numero">
+                                {{ number_format($votos['A candidaturas'] ?? 0, 0, ',', '.') }}
+                            </td>
+                            <td class="text-porcentaje">
+                                {{ number_format(($votos['A candidaturas'] ?? 0) * 100 / ($votos['Validos'] ?? 0), 2, ',', '.') }}%
+                            </td>
+                        </tr>
+
+                        <tr class="even">
+                            <td>En blanco</td>
+                            <td class="text-numero">
+                                {{ number_format($votos['En blanco'] ?? 0, 0, ',', '.') }}
+                            </td>
+                            <td class="text-porcentaje">
+                                {{ number_format(($votos['En blanco'] ?? 0) * 100 / ($votos['Validos'] ?? 0), 2, ',', '.') }}%
+                            </td>
+                        </tr>
+
+                        <tr class="odd">
+                            <td rowspan="1"> Votos Nulos</td>
+                            <td rowspan="1">
+                                {{ number_format($votantes[$year] - $votos['Validos'] ?? 0, 0, ',', '.') }}
+                            </td>
+                            
+                            <td class="text-numero" style="text-align: center;" colspan="3"> - </td>
+                        </tr>
+                    </tbody>
                 </table>
-            @endif
-        @endforeach
-    </body>
-    </html>
+            @endforeach
+        @endif
+
+        <h3>Resultados de las elecciones de {{ $year }}</h3>
+
+        @if (isset($winners[$year]))
+            <div class="chart-container">
+                <canvas id="chart-{{ $year }}"></canvas>
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const ctx = document.getElementById('chart-{{ $year }}').getContext('2d');
+
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: {!! json_encode($winners[$year]['labels']) !!},
+                            datasets: [{
+                                data: {!! json_encode($winners[$year]['data']) !!},
+                                backgroundColor: {!! json_encode($winners[$year]['colors']) !!}
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            cutout: "60%", 
+                            rotation: -90, 
+                            circumference: 180,
+                            plugins: {
+                                legend: {
+                                    position: "top",
+                                    labels: {
+                                        usePointStyle: true
+                                    }
+                                }
+                            }
+                        }
+                    });
+                });
+            </script>
+        @endif
+
+        @if (isset($info_votos[$year]))
+            @foreach ($info_votos[$year] as $candidatura)
+                @php
+                    $candidatos = $candidatura['Candidato'] ?? [];
+                    $votaciones = $candidatura['Votos'] ?? [];
+                    $escanos = $candidatura['Escanos'] ?? [];
+                    $count = max(count($candidatos), count($votaciones), count($escanos));
+                @endphp
+
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Candidato</th>
+                            <th>Votos</th>
+                            <th>Porcentaje</th>
+                            <th>Escaños</th>
+                        </tr>
+                    </thead>
+                    <tbody>                  
+                        @for ($i = 0; $i < $count; $i++)
+                            <tr>
+                                <td>
+                                    {{ $candidatos[$i] ?? '/NA' }}
+                                </td>
+
+                                <td class="text-numero">
+                                    {{ number_format($votaciones[$i] ?? 0, 0, ',', '.') }}
+                                </td>
+
+                                <td>
+                                    {{ number_format(($votaciones[$i] * 100) / $votantes[$year], 2, ',', '.') }}%
+                                </td>
+
+                                <td class="text-escano">
+                                    {{ $escanos[$i] ?? 0 }}
+                                </td>
+                            </tr>
+                        @endfor
+                    </tbody>
+                </table>
+            @endforeach
+        @endif
+    @endforeach
 @endsection

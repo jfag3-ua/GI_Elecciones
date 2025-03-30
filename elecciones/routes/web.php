@@ -18,7 +18,7 @@ Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->name('
 
 // Rutas protegidas con middleware 'auth' (NO FUNCIONA, HAY QUE REVISAR EL INICIO DE SESIÓN)
 Route::get('/voto', [PaginaController::class, 'voto'])->name('voto');
-Route::get('/encuestas', [PaginaController::class, 'encuestas'])->name('encuestas');
+Route::get('/predicciones', [PaginaController::class, 'predicciones'])->name('predicciones');
 Route::get('/resultados', [PaginaController::class, 'resultados'])->name('resultados');
 Route::get('/administracion', [PaginaController::class, 'administracion'])->name('administracion');
 Route::get('/usuario', [PaginaController::class, 'usuario'])->name('usuario');
