@@ -84,6 +84,7 @@ class PaginaController extends Controller
         $years = array_reverse($csv->getHeader()); // Invertir el orden de los años
         $info_general = [];
         $info_votos = [];
+        $info_color = [];
         $winners = [];
 
         foreach ($csv as $index => $row) {
@@ -93,14 +94,13 @@ class PaginaController extends Controller
                     "'"  => '"',   
                     "d'"  => "d ",
                 ];
+                $replacements_v1 = [
+                    "'"  => '"',   
+                ];
 
                 // Decodificar los valores almacenados como diccionario en el CSV
                 $dictionary = json_decode(strtr($row[$year], $replacements), true);
-
-                // Verificar si el JSON se decodificó correctamente
-                if (!is_array($dictionary)) {
-                    dd("Error en JSON en el año: $year", $row[$year], json_last_error_msg(), $dictionary);
-                }
+                $dictionary_v1 = json_decode(strtr($row[$year], $replacements_v1), true);
 
                 if ($index == 1) { // Primera fila -> Info General
                     $info_general[$year][] = $dictionary;
@@ -109,12 +109,17 @@ class PaginaController extends Controller
                 elseif ($index == 2) { // Resto de filas -> Info Votos
                     $info_votos[$year][] = $dictionary;
                 }
+
+                elseif ($index == 3) { // Resto de filas -> Info Votos
+                    $info_color[$year] = $dictionary_v1;
+                }
             }
         }
 
         // Invertir el orden de los datos para que coincidan con los años invertidos
         $info_general = array_reverse($info_general, true);
         $info_votos = array_reverse($info_votos, true);
+        $info_color = array_reverse($info_color, true);
 
         foreach ($years as $year) {
             if (!isset($info_votos[$year])) {
@@ -122,8 +127,6 @@ class PaginaController extends Controller
             }
 
             $escanos_partidos = [];
-            $colores = []; // Colores asignados a cada partido
-
             foreach ($info_votos[$year] as $candidatura) {
                 $candidatos_list = $candidatura['Candidato'] ?? [];
                 $escanos_list = $candidatura['Escanos'] ?? [];
@@ -134,19 +137,29 @@ class PaginaController extends Controller
 
                     if ($escanos > 0) {
                         $escanos_partidos[$candidato] = $escanos;
-
-                        // Asignar un color diferente a cada partido
-                        $colores[$candidato] = sprintf('#%06X', mt_rand(0, 0xFFFFFF));
                     }
                 }
             }
 
-            // Guardar los datos en la variable $winners para pasarlos a la vista
-            $winners[$year] = [
+
+            $background = $info_color[$year]['Background'] ?? [];
+            $hover = $info_color[$year]['Hover'] ?? [];
+
+            $data = [
+                // Partidos
                 'labels' => array_keys($escanos_partidos),
-                'data' => array_values($escanos_partidos),
-                'colors' => array_values($colores),
+    
+                // Escaños
+                'datasets' => [[
+                    'label' => 'Total de Escaños',
+                    'data' => array_values($escanos_partidos),
+                    'backgroundColor' => array_values($background),
+                    'hoverBackgroundColor' => array_values($hover)
+                ]]
             ];
+
+            // Guardar los datos en la variable $winners para pasarlos a la vista
+            $winners[$year] = $data;
         }
 
         return view('resultados', compact('info_general', 'info_votos', 'years', 'winners'));
@@ -161,7 +174,7 @@ class PaginaController extends Controller
     public function usuario()
     {
         // Obtener el usuario autenticado
-        $usuario = auth()->user();
+        $usuario = Auth::user();
 
         // Obtener la información del censo basándonos en el NIF del usuario
         $censo = DB::table('censo')
