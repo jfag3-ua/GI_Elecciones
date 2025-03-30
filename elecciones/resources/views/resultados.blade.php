@@ -138,31 +138,45 @@
             <script>
                 document.addEventListener("DOMContentLoaded", function() {
                     const ctx = document.getElementById('chart-{{ $year }}').getContext('2d');
+                    const readData = {!! json_encode($winners[$year]) !!};
+
+                    const data = {
+                        labels: readData.labels,
+                        datasets: readData.datasets
+                    };
+
+                    const options = {
+                        responsive: true,
+                        cutout: "60%", 
+                        rotation: -90, 
+                        circumference: 180,
+                        plugins: {
+                            legend: {
+                                position: "top",
+                                labels: {
+                                    usePointStyle: true
+                                }
+                            },
+
+                            title:{
+                                display: true,   
+                                text: "99",
+                                color: "#000",
+                                font: {
+                                    size: 30,
+                                    weight: "bold"
+                                },
+                                position: "bottom"
+                            }
+                        }
+                    };
 
                     new Chart(ctx, {
                         type: 'doughnut',
-                        data: {
-                            labels: {!! json_encode($winners[$year]['labels']) !!},
-                            datasets: [{
-                                data: {!! json_encode($winners[$year]['data']) !!},
-                                backgroundColor: {!! json_encode($winners[$year]['colors']) !!}
-                            }]
-                        },
-                        options: {
-                            responsive: true,
-                            cutout: "60%", 
-                            rotation: -90, 
-                            circumference: 180,
-                            plugins: {
-                                legend: {
-                                    position: "top",
-                                    labels: {
-                                        usePointStyle: true
-                                    }
-                                }
-                            }
-                        }
+                        data: data,
+                        options: options
                     });
+
                 });
             </script>
         @endif
