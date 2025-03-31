@@ -2,49 +2,146 @@
 
 namespace App\Http\Controllers;
 
+use League\Csv\Reader;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
+
 
 class ResultadosController extends Controller
 {
     public function index(Request $request)
     {
-        // Simulación de datos (debes reemplazar con datos reales)
-        $info_general = [
-            2020 => [['Censo' => 500000, 'Votantes' => 350000]],
-            2024 => [['Censo' => 520000, 'Votantes' => 370000]],
-        ];
+        $csv = Reader::createFromPath(storage_path('/app/datasets/elections_dataset.csv'), 'r');
+        $csv->setHeaderOffset(0); 
+        $years = array_reverse($csv->getHeader());
+
+        $info_general = [];
+        $info_votos = [];
+        $info_color = [];
+        $winners = [];
+
+        foreach ($csv as $index => $row) {
+            foreach ($years as $year) {
+                $replacements = ["'" => '"', "d'" => "d "];
+                $replacements_v1 = ["'" => '"'];
+
+                $dictionary = json_decode(strtr($row[$year], $replacements), true);
+                $dictionary_v1 = json_decode(strtr($row[$year], $replacements_v1), true);
+
+                if ($index == 1) {
+                    $info_general[$year][] = $dictionary;
+                } elseif ($index == 2) {
+                    $info_votos[$year][] = $dictionary;
+                } elseif ($index == 3) {
+                    $info_color[$year] = $dictionary_v1;
+                }
+            }
+        }
+
+        $info_general = array_reverse($info_general, true);
         
-        $winners = [
-            2020 => ['Partido A' => 45, 'Partido B' => 35, 'Partido C' => 20],
-            2024 => ['Partido A' => 50, 'Partido B' => 30, 'Partido C' => 20],
-        ];
-
-        $info_votos = []; // Datos adicionales si los tienes.
-
-        // Obtener los años con elecciones disponibles
-        $years = array_keys($info_general);
-
-        // Configurar la paginación
-        $perPage = 1; // Número de años por página
-        $currentPage = LengthAwarePaginator::resolveCurrentPage();
-        $currentYears = array_slice($years, ($currentPage - 1) * $perPage, $perPage);
-
-        // Crear la paginación
-        $yearsPaginated = new LengthAwarePaginator(
-            $currentYears,
-            count($years),
+        // Convertir los años en una colección paginable
+        $page = $request->query('page', 1);
+        $perPage = 2; // Cantidad de años por página
+        $yearsCollection = collect($years);
+        $paginatedYears = new LengthAwarePaginator(
+            $yearsCollection->forPage($page, $perPage),
+            $yearsCollection->count(),
             $perPage,
-            $currentPage,
+            $page,
             ['path' => $request->url(), 'query' => $request->query()]
         );
 
-        // Asegurar que la variable se está pasando a la vista
-        return view('resultados', [
-            'yearsPaginated' => $yearsPaginated,
-            'info_general' => $info_general,
-            'winners' => $winners,
-            'info_votos' => $info_votos
-        ]);
+        return view('resultados', compact('info_general', 'info_votos', 'paginatedYears', 'winners'));
     }
 }
+/*
+if (!file_exists(storage_path('/app/datasets/elections_dataset.csv'))) {
+    return redirect()->route('inicio')->with('error', 'No se ha cargado el dataset');
+}
+
+$csv = Reader::createFromPath(storage_path('/app/datasets/elections_dataset.csv'), 'r');
+$csv->setHeaderOffset(0); // Usa la primera fila como encabezados
+
+$years = array_reverse($csv->getHeader()); // Invertir el orden de los años
+$info_general = [];
+$info_votos = [];
+$info_color = [];
+$winners = [];
+
+foreach ($csv as $index => $row) {
+    foreach ($years as $year) {
+        // Reemplazar caracteres especiales en el JSON
+        $replacements = [
+            "'"  => '"',   
+            "d'"  => "d ",
+        ];
+        $replacements_v1 = [
+            "'"  => '"',   
+        ];
+
+        // Decodificar los valores almacenados como diccionario en el CSV
+        $dictionary = json_decode(strtr($row[$year], $replacements), true);
+        $dictionary_v1 = json_decode(strtr($row[$year], $replacements_v1), true);
+
+        if ($index == 1) { // Primera fila -> Info General
+            $info_general[$year][] = $dictionary;
+        }
+
+        elseif ($index == 2) { // Resto de filas -> Info Votos
+            $info_votos[$year][] = $dictionary;
+        }
+
+        elseif ($index == 3) { // Resto de filas -> Info Votos
+            $info_color[$year] = $dictionary_v1;
+        }
+    }
+}
+
+// Invertir el orden de los datos para que coincidan con los años invertidos
+$info_general = array_reverse($info_general, true);
+$info_votos = array_reverse($info_votos, true);
+$info_color = array_reverse($info_color, true);
+
+foreach ($years as $year) {
+    if (!isset($info_votos[$year])) {
+        continue;
+    }
+
+    $escanos_partidos = [];
+    foreach ($info_votos[$year] as $candidatura) {
+        $candidatos_list = $candidatura['Candidato'] ?? [];
+        $escanos_list = $candidatura['Escanos'] ?? [];
+
+        for ($i = 0; $i < count($candidatos_list); $i++) {
+            $candidato = $candidatos_list[$i] ?? '/NA';
+            $escanos = $escanos_list[$i] ?? 0;
+
+            if ($escanos > 0) {
+                $escanos_partidos[$candidato] = $escanos;
+            }
+        }
+    }
+
+
+    $background = $info_color[$year]['Background'] ?? [];
+    $hover = $info_color[$year]['Hover'] ?? [];
+
+    $data = [
+        // Partidos
+        'labels' => array_keys($escanos_partidos),
+
+        // Escaños
+        'datasets' => [[
+            'label' => 'Total de Escaños',
+            'data' => array_values($escanos_partidos),
+            'backgroundColor' => array_values($background),
+            'hoverBackgroundColor' => array_values($hover)
+        ]]
+    ];
+
+    // Guardar los datos en la variable $winners para pasarlos a la vista
+    $winners[$year] = $data;
+}
+
+return view('resultados', compact('info_general', 'info_votos', 'years', 'winners'));*/

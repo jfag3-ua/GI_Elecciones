@@ -17,6 +17,16 @@
         th {
             background-color: #f2f2f2;
         }
+        .label-column {
+            text-align: left;
+        }
+        .divider-row {
+            border-bottom: 3px solid black;
+        }
+        .text-porcentaje, .text-escano {
+            color: #8c0c34;
+            font-weight: bold;
+        }
         .chart-container {
             display: flex;
             justify-content: center;
@@ -27,80 +37,85 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
+    @php
+        $votantes = [];
+    @endphp
+
     <h2>Resultados</h2>
 
-    {{-- Verificar si la variable está definida --}}
-    @if (!isset($yearsPaginated) || $yearsPaginated->isEmpty())
-        <p>No hay datos disponibles.</p>
-    @else
-        @foreach ($yearsPaginated as $year)
-            <h3>Información general sobre las elecciones de {{ $year }}</h3>
+    @foreach ($paginatedYears as $year)
+        <h3>Información general sobre las elecciones de {{ $year }}</h3>
 
-            @if (isset($info_general[$year]))
-                @foreach ($info_general[$year] as $votos)
-                    <table>
-                        <thead>
-                            <tr>
-                                <th colspan="3">Información general sobre las elecciones</th>
-                                <th>Número</th>
-                                <th>Porcentaje</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td rowspan="2">Censo</td>
-                                <td rowspan="2">{{ number_format($votos['Censo'] ?? 0, 0, ',', '.') }}</td>
-                                <td>Votantes</td>
-                                <td>{{ number_format($votos['Votantes'] ?? 0, 0, ',', '.') }}</td>
-                                <td>
-                                    @php
-                                        $censo = $votos['Censo'] ?? 0;
-                                        $votantes = $votos['Votantes'] ?? 0;
-                                        $porcentaje = $censo > 0 ? ($votantes * 100 / $censo) : 0;
-                                    @endphp
-                                    {{ number_format($porcentaje, 2, ',', '.') }}%
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                @endforeach
-            @endif
+        @php
+            $data = json_encode($winners[$year] ?? []);
+        @endphp
 
-            @if (isset($winners[$year]))
-                <h3>Resultados de las elecciones de {{ $year }}</h3>
-                <div class="chart-container">
-                    <canvas id="chart-{{ $year }}"></canvas>
-                </div>
-            @endif
-        @endforeach
+        @if (isset($info_general[$year]))
+            @foreach ($info_general[$year] as $votos)
+                @php
+                    $votantes[$year] = $votos['Votantes'] ?? 0;
+                @endphp
 
-        {{-- Enlaces de paginación --}}
-        <div class="pagination">
-            {{ $yearsPaginated->links('pagination::bootstrap-4') }}
-        </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th colspan="3">Información general sobre las elecciones</th>
+                            <th>Número</th>
+                            <th>Porcentaje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td rowspan="2">Censo</td>
+                            <td class="text-numero" rowspan="2">
+                                {{ number_format($votos['Censo'] ?? 0, 0, ',', '.') }}
+                            </td>
 
-        {{-- Script para los gráficos --}}
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                @foreach ($yearsPaginated as $year)
-                    const ctx{{ $year }} = document.getElementById('chart-{{ $year }}').getContext('2d');
-                    const data{{ $year }} = {!! json_encode($winners[$year] ?? []) !!};
+                            <td>Votantes</td>
+                            <td class="text-numero">
+                                {{ number_format($votos['Votantes'] ?? 0, 0, ',', '.') }}
+                            </td>
+                            <td class="text-porcentaje">
+                                {{ number_format(($votos['Votantes'] ?? 0) * 100 / ($votos['Censo'] ?? 0), 2, ',', '.') }}%
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            @endforeach
+        @endif
 
-                    if (data{{ $year }} && Object.keys(data{{ $year }}).length > 0) {
-                        new Chart(ctx{{ $year }}, {
-                            type: 'doughnut',
-                            data: {
-                                labels: Object.keys(data{{ $year }}),
-                                datasets: [{
-                                    data: Object.values(data{{ $year }}),
-                                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
-                                }]
-                            },
-                            options: { responsive: true }
-                        });
-                    }
-                @endforeach
-            });
-        </script>
-    @endif
+        <h3>Resultados de las elecciones de {{ $year }}</h3>
+
+        @if (isset($winners[$year]))
+            <div class="chart-container">
+                <canvas id="chart-{{ $year }}"></canvas>
+            </div>
+
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    const ctx = document.getElementById('chart-{{ $year }}').getContext('2d');
+                    const readData = {!! json_encode($winners[$year]) !!};
+
+                    new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: readData.labels,
+                            datasets: readData.datasets
+                        },
+                        options: {
+                            responsive: true,
+                            cutout: "60%", 
+                            rotation: -90, 
+                            circumference: 180
+                        }
+                    });
+                });
+            </script>
+        @endif
+    @endforeach
+
+    {{-- Controles de paginación --}}
+    <div>
+        {{ $paginatedYears->links() }}
+    </div>
 @endsection
