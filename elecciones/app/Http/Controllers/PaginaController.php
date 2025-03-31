@@ -26,7 +26,7 @@ class PaginaController extends Controller
         return view('voto');
     }
 
-    public function encuestas() {
+    public function predicciones() {
         if (!file_exists(storage_path('/app/datasets/predictions_dataset.csv'))) {
             return redirect()->route('inicio')->with('error', 'No se ha cargado el dataset');
         }
@@ -69,7 +69,7 @@ class PaginaController extends Controller
         $blanco = array_reverse($blanco, true);
         $nulo = array_reverse($nulo, true);
 
-        return view('encuestas', compact('abstencion', 'blanco', 'nulo', 'years'));
+        return view('predicciones', compact('abstencion', 'blanco', 'nulo', 'years'));
     }
 
     public function resultados()
@@ -80,13 +80,13 @@ class PaginaController extends Controller
 
         $csv = Reader::createFromPath(storage_path('/app/datasets/elections_dataset.csv'), 'r');
         $csv->setHeaderOffset(0); // Usa la primera fila como encabezados
-    
-        // $years = $csv->getHeader(); // Obtener los años como columnas
+
         $years = array_reverse($csv->getHeader()); // Invertir el orden de los años
         $info_general = [];
         $info_votos = [];
+        $info_color = [];
         $winners = [];
-    
+
         foreach ($csv as $index => $row) {
             foreach ($years as $year) {
                 // Reemplazar caracteres especiales en el JSON
@@ -94,22 +94,24 @@ class PaginaController extends Controller
                     "'"  => '"',   
                     "d'"  => "d ",
                 ];
+                $replacements_v1 = [
+                    "'"  => '"',   
+                ];
 
                 // Decodificar los valores almacenados como diccionario en el CSV
                 $dictionary = json_decode(strtr($row[$year], $replacements), true);
+                $dictionary_v1 = json_decode(strtr($row[$year], $replacements_v1), true);
 
-                // Verificar si el JSON se decodificó correctamente
-                if (!is_array($dictionary)) {
-                    dd("Error en JSON en el año: $year", $row[$year], json_last_error_msg(), $dictionary);
-                }
-    
                 if ($index == 1) { // Primera fila -> Info General
                     $info_general[$year][] = $dictionary;
                 }
-                 
+
                 elseif ($index == 2) { // Resto de filas -> Info Votos
                     $info_votos[$year][] = $dictionary;
-                    //dd("Valor de la ARRAY: $year", $row[$year], $dictionary);
+                }
+
+                elseif ($index == 3) { // Resto de filas -> Info Votos
+                    $info_color[$year] = $dictionary_v1;
                 }
             }
         }
@@ -117,45 +119,53 @@ class PaginaController extends Controller
         // Invertir el orden de los datos para que coincidan con los años invertidos
         $info_general = array_reverse($info_general, true);
         $info_votos = array_reverse($info_votos, true);
-        
+        $info_color = array_reverse($info_color, true);
+
         foreach ($years as $year) {
+            if (!isset($info_votos[$year])) {
+                continue;
+            }
+
+            $escanos_partidos = [];
             foreach ($info_votos[$year] as $candidatura) {
                 $candidatos_list = $candidatura['Candidato'] ?? [];
-                $votaciones_list = $candidatura['Votos'] ?? [];
                 $escanos_list = $candidatura['Escanos'] ?? [];
-                $count = max(count($candidatos_list), count($votaciones_list), count($escanos_list));
 
-                $elected = [];
-                for ($i = 0; $i < $count; $i++) {
+                for ($i = 0; $i < count($candidatos_list); $i++) {
                     $candidato = $candidatos_list[$i] ?? '/NA';
-                    $votacion = $votaciones_list[$i] ?? 0;
-                    $escano = $escanos_list[$i] ?? 0;
+                    $escanos = $escanos_list[$i] ?? 0;
 
-                    if ($escano > 0){
-                        $elected[$candidato] = $escano;
+                    if ($escanos > 0) {
+                        $escanos_partidos[$candidato] = $escanos;
                     }
                 }
-
-                $data = [
-                    // Partidos
-                    'labels' => array_keys($elected),
-        
-                    // Escaños
-                    'datasets' => [[
-                        'label' => 'Total de Escaños',
-                        'data' => $elected,
-                        'backgroundColor' => 'rgba(54, 162, 235, 0.5)',
-                        'borderColor' => 'rgba(54, 162, 235, 1)',
-                        'borderWidth' => 1
-                    ]]
-                ];
-
-                $winners[$year] = $data;
             }
-        }
+
+
+            $background = $info_color[$year]['Background'] ?? [];
+            $hover = $info_color[$year]['Hover'] ?? [];
+
+            $data = [
+                // Partidos
+                'labels' => array_keys($escanos_partidos),
     
+                // Escaños
+                'datasets' => [[
+                    'label' => 'Total de Escaños',
+                    'data' => array_values($escanos_partidos),
+                    'backgroundColor' => array_values($background),
+                    'hoverBackgroundColor' => array_values($hover)
+                ]]
+            ];
+
+            // Guardar los datos en la variable $winners para pasarlos a la vista
+            $winners[$year] = $data;
+        }
+
         return view('resultados', compact('info_general', 'info_votos', 'years', 'winners'));
     }
+
+
 
     public function administracion() {
         return view('administracion');
@@ -164,7 +174,7 @@ class PaginaController extends Controller
     public function usuario()
     {
         // Obtener el usuario autenticado
-        $usuario = auth()->user();
+        $usuario = Auth::user();
 
         // Obtener la información del censo basándonos en el NIF del usuario
         $censo = DB::table('censo')
