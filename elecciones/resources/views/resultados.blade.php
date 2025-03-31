@@ -17,16 +17,6 @@
         th {
             background-color: #f2f2f2;
         }
-        .label-column {
-            text-align: left;
-        }
-        .divider-row {
-            border-bottom: 3px solid black;
-        }
-        .text-porcentaje, .text-escano {
-            color: #8c0c34;
-            font-weight: bold;
-        }
         .chart-container {
             display: flex;
             justify-content: center;
@@ -37,191 +27,80 @@
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    @php
-        $votantes = [];
-    @endphp
-
     <h2>Resultados</h2>
 
-    @foreach ($years as $year)
-        <h3>Información general sobre las elecciones de {{ $year }}</h3>
+    {{-- Verificar si la variable está definida --}}
+    @if (!isset($yearsPaginated) || $yearsPaginated->isEmpty())
+        <p>No hay datos disponibles.</p>
+    @else
+        @foreach ($yearsPaginated as $year)
+            <h3>Información general sobre las elecciones de {{ $year }}</h3>
 
-        @php
-            $data = json_encode($winners[$year] ?? []);
-        @endphp
-
-        @if (isset($info_general[$year]))
-            @foreach ($info_general[$year] as $votos)
-                @php
-                    $votantes[$year] = $votos['Votantes'] ?? 0;
-                @endphp
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th colspan="3">Información general sobre las elecciones</th>
-                            <th>Número</th>
-                            <th>Porcentaje</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr class="odd">
-                            <td rowspan="2">Censo</td>
-                            <td class="text-numero" rowspan="2">
-                                {{ number_format($votos['Censo'] ?? 0, 0, ',', '.') }}
-                            </td>
-
-                            <td>Votantes</td>
-                            <td class="text-numero">
-                                {{ number_format($votos['Votantes'] ?? 0, 0, ',', '.') }}
-                            </td>
-                            <td class="text-porcentaje">
-                                {{ number_format(($votos['Votantes'] ?? 0) * 100 / ($votos['Censo'] ?? 0), 2, ',', '.') }}%
-                            </td>
-                        </tr>
-
-                        <tr class="even">
-                            <td>Abstenciones</td>
-                            <td class="text-numero">
-                                {{ number_format($votos['Abstenciones'] ?? 0, 0, ',', '.') }}
-                            </td>
-                            <td class="text-porcentaje">
-                                {{ number_format(($votos['Abstenciones'] ?? 0) * 100 / ($votos['Censo'] ?? 0), 2, ',', '.') }}%
-                            </td>
-                        </tr>
-
-                        <tr class="odd">
-                            <td rowspan="2">Votos Válidos</td>
-                            <td class="text-numero" rowspan="2">
-                                {{ number_format($votos['Validos'] ?? 0, 0, ',', '.') }}
-                            </td>
-
-                            <td>A candidaturas</td>
-                            <td class="text-numero">
-                                {{ number_format($votos['A candidaturas'] ?? 0, 0, ',', '.') }}
-                            </td>
-                            <td class="text-porcentaje">
-                                {{ number_format(($votos['A candidaturas'] ?? 0) * 100 / ($votos['Validos'] ?? 0), 2, ',', '.') }}%
-                            </td>
-                        </tr>
-
-                        <tr class="even">
-                            <td>En blanco</td>
-                            <td class="text-numero">
-                                {{ number_format($votos['En blanco'] ?? 0, 0, ',', '.') }}
-                            </td>
-                            <td class="text-porcentaje">
-                                {{ number_format(($votos['En blanco'] ?? 0) * 100 / ($votos['Validos'] ?? 0), 2, ',', '.') }}%
-                            </td>
-                        </tr>
-
-                        <tr class="odd">
-                            <td rowspan="1"> Votos Nulos</td>
-                            <td rowspan="1">
-                                {{ number_format($votantes[$year] - $votos['Validos'] ?? 0, 0, ',', '.') }}
-                            </td>
-                            
-                            <td class="text-numero" style="text-align: center;" colspan="3"> - </td>
-                        </tr>
-                    </tbody>
-                </table>
-            @endforeach
-        @endif
-
-        <h3>Resultados de las elecciones de {{ $year }}</h3>
-
-        @if (isset($winners[$year]))
-            <div class="chart-container">
-                <canvas id="chart-{{ $year }}"></canvas>
-            </div>
-
-            <script>
-                document.addEventListener("DOMContentLoaded", function() {
-                    const ctx = document.getElementById('chart-{{ $year }}').getContext('2d');
-                    const readData = {!! json_encode($winners[$year]) !!};
-
-                    const data = {
-                        labels: readData.labels,
-                        datasets: readData.datasets
-                    };
-
-                    const options = {
-                        responsive: true,
-                        cutout: "60%", 
-                        rotation: -90, 
-                        circumference: 180,
-                        plugins: {
-                            legend: {
-                                position: "top",
-                                labels: {
-                                    usePointStyle: true
-                                }
-                            },
-
-                            title:{
-                                display: true,   
-                                text: "99",
-                                color: "#000",
-                                font: {
-                                    size: 30,
-                                    weight: "bold"
-                                },
-                                position: "bottom"
-                            }
-                        }
-                    };
-
-                    new Chart(ctx, {
-                        type: 'doughnut',
-                        data: data,
-                        options: options
-                    });
-
-                });
-            </script>
-        @endif
-
-        @if (isset($info_votos[$year]))
-            @foreach ($info_votos[$year] as $candidatura)
-                @php
-                    $candidatos = $candidatura['Candidato'] ?? [];
-                    $votaciones = $candidatura['Votos'] ?? [];
-                    $escanos = $candidatura['Escanos'] ?? [];
-                    $count = max(count($candidatos), count($votaciones), count($escanos));
-                @endphp
-
-                <table>
-                    <thead>
-                        <tr>
-                            <th>Candidato</th>
-                            <th>Votos</th>
-                            <th>Porcentaje</th>
-                            <th>Escaños</th>
-                        </tr>
-                    </thead>
-                    <tbody>                  
-                        @for ($i = 0; $i < $count; $i++)
+            @if (isset($info_general[$year]))
+                @foreach ($info_general[$year] as $votos)
+                    <table>
+                        <thead>
                             <tr>
+                                <th colspan="3">Información general sobre las elecciones</th>
+                                <th>Número</th>
+                                <th>Porcentaje</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td rowspan="2">Censo</td>
+                                <td rowspan="2">{{ number_format($votos['Censo'] ?? 0, 0, ',', '.') }}</td>
+                                <td>Votantes</td>
+                                <td>{{ number_format($votos['Votantes'] ?? 0, 0, ',', '.') }}</td>
                                 <td>
-                                    {{ $candidatos[$i] ?? '/NA' }}
-                                </td>
-
-                                <td class="text-numero">
-                                    {{ number_format($votaciones[$i] ?? 0, 0, ',', '.') }}
-                                </td>
-
-                                <td>
-                                    {{ number_format(($votaciones[$i] * 100) / $votantes[$year], 2, ',', '.') }}%
-                                </td>
-
-                                <td class="text-escano">
-                                    {{ $escanos[$i] ?? 0 }}
+                                    @php
+                                        $censo = $votos['Censo'] ?? 0;
+                                        $votantes = $votos['Votantes'] ?? 0;
+                                        $porcentaje = $censo > 0 ? ($votantes * 100 / $censo) : 0;
+                                    @endphp
+                                    {{ number_format($porcentaje, 2, ',', '.') }}%
                                 </td>
                             </tr>
-                        @endfor
-                    </tbody>
-                </table>
-            @endforeach
-        @endif
-    @endforeach
+                        </tbody>
+                    </table>
+                @endforeach
+            @endif
+
+            @if (isset($winners[$year]))
+                <h3>Resultados de las elecciones de {{ $year }}</h3>
+                <div class="chart-container">
+                    <canvas id="chart-{{ $year }}"></canvas>
+                </div>
+            @endif
+        @endforeach
+
+        {{-- Enlaces de paginación --}}
+        <div class="pagination">
+            {{ $yearsPaginated->links('pagination::bootstrap-4') }}
+        </div>
+
+        {{-- Script para los gráficos --}}
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                @foreach ($yearsPaginated as $year)
+                    const ctx{{ $year }} = document.getElementById('chart-{{ $year }}').getContext('2d');
+                    const data{{ $year }} = {!! json_encode($winners[$year] ?? []) !!};
+
+                    if (data{{ $year }} && Object.keys(data{{ $year }}).length > 0) {
+                        new Chart(ctx{{ $year }}, {
+                            type: 'doughnut',
+                            data: {
+                                labels: Object.keys(data{{ $year }}),
+                                datasets: [{
+                                    data: Object.values(data{{ $year }}),
+                                    backgroundColor: ['#FF6384', '#36A2EB', '#FFCE56', '#4BC0C0', '#9966FF'],
+                                }]
+                            },
+                            options: { responsive: true }
+                        });
+                    }
+                @endforeach
+            });
+        </script>
+    @endif
 @endsection

@@ -5,6 +5,11 @@ use App\Http\Controllers\PaginaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegistroController;
 
+use App\Http\Controllers\ResultadosController;
+
+Route::get('/resultados', [ResultadosController::class, 'index']);
+
+
 
 // Rutas sin restricción de acceso
 Route::get('/', [PaginaController::class, 'landing'])->name('landing');
@@ -15,6 +20,8 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // Ce
 Route::get('/registro', [PaginaController::class, 'registro'])->name('registro');
 Route::post('/registro', [RegistroController::class, 'register'])->name('registro2');
 Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->name('registro2.form');
+
+
 
 // Rutas protegidas con middleware 'auth' (NO FUNCIONA, HAY QUE REVISAR EL INICIO DE SESIÓN)
 Route::get('/voto', [PaginaController::class, 'voto'])->name('voto');
