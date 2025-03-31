@@ -3,36 +3,69 @@
 @section('title', 'Usuario')
 
 @section('content')
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .label-column {
+            text-align: left;
+        }
+        .divider-row {
+            border-bottom: 3px solid black;
+        }
+
+        .text-porcentaje, .text-escano {
+            color: #a41336ff;
+            font-weight: bold;
+        }
+    </style>    
+
     <h2>Usuario</h2>
 
     <table>
+        <thead>
+            <tr>
+                <th>Datos</th>
+                <th>Valores</th>
+            </tr>
+        </thead>
         <tbody>
             <tr>
-                <td><b>Nombre de usuario</b></td>
+                <td>Nombre de usuario</td>
                 <td>{{ $usuario->NOMBREUSUARIO }}</td>
             </tr>
             <tr>
-                <td><b>NIF</b></td>
+                <td>NIF</td>
                 <td>{{ $censo->NIF }}</td>
             </tr>
             <tr>
-                <td><b>Nombre</b></td>
+                <td>Nombre</td>
                 <td>{{ $censo->NOMBRE }}</td>
             </tr>
             <tr>
-                <td><b>Apellidos</b></td>
+                <td>Apellidos</td>
                 <td>{{ $censo->APELLIDOS }}</td>
             </tr>
             <tr>
-                <td><b>Fecha de nacimiento</b></td>
+                <td>Fecha de nacimiento</td>
                 <td>{{ $censo->FECHANAC }}</td>
             </tr>
             <tr>
-                <td><b>Sexo</b></td>
+                <td>Sexo</td>
                 <td>{{ $censo->SEXO }}</td>
             </tr>
             <tr>
-                <td><b>Dirección</b></td>
+                <td>Dirección</td>
                 <td>
                     {{ $direccion->NOMVIA }}, Nº {{ $direccion->NUMERO }},
                     @if($direccion->BIS) {{ $direccion->BIS}}, @endif
