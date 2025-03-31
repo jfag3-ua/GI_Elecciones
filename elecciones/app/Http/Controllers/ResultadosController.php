@@ -9,14 +9,15 @@ use Illuminate\Pagination\LengthAwarePaginator;
 
 class ResultadosController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request, $year = null)  
     {
         if (!file_exists(storage_path('/app/datasets/elections_dataset.csv'))) {
             return redirect()->route('inicio')->with('error', 'No se ha cargado el dataset');
         }
+
         $csv = Reader::createFromPath(storage_path('/app/datasets/elections_dataset.csv'), 'r');
-        $csv->setHeaderOffset(0); 
-        $years = array_reverse($csv->getHeader());
+        $csv->setHeaderOffset(0);
+        $years = array_reverse($csv->getHeader()); // Lista de años
 
         $info_general = [];
         $info_votos = [];
@@ -24,19 +25,19 @@ class ResultadosController extends Controller
         $winners = [];
 
         foreach ($csv as $index => $row) {
-            foreach ($years as $year) {
+            foreach ($years as $year_key) {
                 $replacements = ["'" => '"', "d'" => "d "];
                 $replacements_v1 = ["'" => '"'];
 
-                $dictionary = json_decode(strtr($row[$year], $replacements), true);
-                $dictionary_v1 = json_decode(strtr($row[$year], $replacements_v1), true);
+                $dictionary = json_decode(strtr($row[$year_key], $replacements), true);
+                $dictionary_v1 = json_decode(strtr($row[$year_key], $replacements_v1), true);
 
                 if ($index == 1) {
-                    $info_general[$year][] = $dictionary;
+                    $info_general[$year_key][] = $dictionary;
                 } elseif ($index == 2) {
-                    $info_votos[$year][] = $dictionary;
+                    $info_votos[$year_key][] = $dictionary;
                 } elseif ($index == 3) {
-                    $info_color[$year] = $dictionary_v1;
+                    $info_color[$year_key] = $dictionary_v1;
                 }
             }
         }
@@ -45,13 +46,13 @@ class ResultadosController extends Controller
         $info_votos = array_reverse($info_votos, true);
         $info_color = array_reverse($info_color, true);
 
-        foreach ($years as $year) {
-            if (!isset($info_votos[$year])) {
+        foreach ($years as $year_key) {
+            if (!isset($info_votos[$year_key])) {
                 continue;
             }
 
             $escanos_partidos = [];
-            foreach ($info_votos[$year] as $candidatura) {
+            foreach ($info_votos[$year_key] as $candidatura) {
                 $candidatos_list = $candidatura['Candidato'] ?? [];
                 $escanos_list = $candidatura['Escanos'] ?? [];
 
@@ -65,15 +66,11 @@ class ResultadosController extends Controller
                 }
             }
 
-
-            $background = $info_color[$year]['Background'] ?? [];
-            $hover = $info_color[$year]['Hover'] ?? [];
+            $background = $info_color[$year_key]['Background'] ?? [];
+            $hover = $info_color[$year_key]['Hover'] ?? [];
 
             $data = [
-                // Partidos
                 'labels' => array_keys($escanos_partidos),
-    
-                // Escaños
                 'datasets' => [[
                     'label' => 'Total de Escaños',
                     'data' => array_values($escanos_partidos),
@@ -82,21 +79,14 @@ class ResultadosController extends Controller
                 ]]
             ];
 
-            // Guardar los datos en la variable $winners para pasarlos a la vista
-            $winners[$year] = $data;
+            $winners[$year_key] = $data;
         }
-        // Convertir los años en una colección paginable
-        $page = $request->query('page', 1);
-        $perPage = 1; // Cantidad de años por página
-        $yearsCollection = collect($years);
-        $paginatedYears = new LengthAwarePaginator(
-            $yearsCollection->forPage($page, $perPage),
-            $yearsCollection->count(),
-            $perPage,
-            $page,
-            ['path' => $request->url(), 'query' => $request->query()]
-        );
 
-        return view('resultados', compact('info_general', 'info_votos', 'paginatedYears', 'winners'));
+        // Verificar que el año recibido esté en la lista de años válidos
+        $selectedYear = in_array($year, $years) ? $year : ($years[0] ?? null);
+
+        return view('resultados', compact('info_general', 'info_votos', 'winners', 'years', 'selectedYear'));
     }
+
+
 }

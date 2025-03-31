@@ -7,9 +7,7 @@ use App\Http\Controllers\RegistroController;
 
 use App\Http\Controllers\ResultadosController;
 
-Route::get('/resultados', [ResultadosController::class, 'index'])->name('resultados');
-
-
+Route::get('/resultados/{year?}', [ResultadosController::class, 'index'])->name('resultados');
 
 
 // Rutas sin restricción de acceso
