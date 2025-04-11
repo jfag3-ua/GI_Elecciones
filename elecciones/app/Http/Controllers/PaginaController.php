@@ -85,20 +85,30 @@ class PaginaController extends Controller
 
     public function usuario()
     {
-        // Obtener el usuario autenticado
-        $usuario = Auth::user();
+        // Comprobar si hay un usuario autenticado con el guard 'web'
+        if (Auth::guard('web')->check()) {
+            $usuario = Auth::guard('web')->user();
 
-        // Obtener la información del censo basándonos en el NIF del usuario
-        $censo = DB::table('censo')
-                    ->where('NIF', $usuario->NIF)
-                    ->first();
+            $censo = DB::table('censo')
+                        ->where('NIF', $usuario->NIF)
+                        ->first();
 
-        // Obtener la dirección asociada al usuario (por IDDIRECCION)
-        $direccion = DB::table('direcciones')
-                    ->where('IDDIRECCION', $censo->IDDIRECCION)
-                    ->first();
+            $direccion = DB::table('direcciones')
+                        ->where('IDDIRECCION', $censo->IDDIRECCION)
+                        ->first();
 
-        // Pasar los datos a la vista
-        return view('usuario', compact('usuario', 'censo', 'direccion'));
+            return view('usuario', compact('usuario', 'censo', 'direccion'));
+        }
+
+        // Comprobar si hay un usuario autenticado con el guard 'admin'
+        if (Auth::guard('admin')->check()) {
+            $admin = Auth::guard('admin')->user();
+
+            // Si quieres pasar algo para admin, puedes hacerlo aquí
+            return view('usuario', ['admin' => $admin]);
+        }
+
+        // Si no hay nadie autenticado, redirigir al login o mostrar error
+        return redirect()->route('inicio')->with('error', 'No has iniciado sesión.');
     }
 }
