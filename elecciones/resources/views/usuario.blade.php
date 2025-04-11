@@ -23,12 +23,17 @@
         .divider-row {
             border-bottom: 3px solid black;
         }
-
         .text-porcentaje, .text-escano {
-            color: #a41336ff;
+            color: #8c0c34;
             font-weight: bold;
         }
-    </style>    
+        .chart-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+    </style>  
 
     @auth('web')
         <h2>Usuario</h2>
@@ -92,12 +97,12 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>Nombre de usuario</td>
-                    <td>{{ $admin->NOMBREUSUARIO }}</td>
-                </tr>
-                <tr>
                     <td>NIF</td>
                     <td>{{ $admin->NIF }}</td>
+                </tr>
+                <tr>
+                    <td>Nombre de usuario</td>
+                    <td>{{ $admin->NOMBREUSUARIO }}</td>
                 </tr>
             </tbody>
         </table>
