@@ -35,17 +35,61 @@
         }
     </style>
 
-    @if (session('success'))
+    @if (session('successActualizar'))
         <script>
             Swal.fire({
                 icon: 'success',
                 title: 'Candidatura actualizada',
-                text: '{{ session('success') }}',
-                confirmButtonText: 'Aceptar',
-                confirmButtonColor: '#8c0c34'
+                text: '{{ session('successActualizar') }}',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar'
             });
         </script>
     @endif
+
+    @if (session('successAnyadir'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Candidatura añadida',
+                text: '{{ session('successAnyadir') }}',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    @endif
+
+    @if (session('successEliminar'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Candidatura eliminada',
+                text: '{{ session('successEliminar') }}',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    @endif
+
+    <script>
+        function confirmarBorrado(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "La candidatura se borrará",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, borrar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-borrar-' + id).submit();
+                }
+            });
+        }
+    </script>
+
 
     <h2>Administrar</h2>
     <p class="notice">Aquí un administrador puede realizar tareas de control y administración (<b>un administrador no puede votar</b>).</p>
@@ -110,12 +154,22 @@
                     <td>{{ $candidatura->escanyosElegidos }}</td>
                     <td>{{ $circunscripciones[$candidatura->idCircunscripcion] ?? 'Desconocida' }}</td>
                     <td><a href="{{ route('candidatura.editar', $candidatura->idCandidatura) }}">Editar</a></td>
-                    <td><a href>Borrar</a></td>
+                    <!-- Formulario oculto para eliminar -->
+                    <td>
+                        <form id="form-borrar-{{ $candidatura->idCandidatura }}" method="POST" action="{{ route('candidatura.eliminar', $candidatura->idCandidatura) }}" style="display: none;">
+                            @csrf
+                            @method('DELETE')
+                        </form>
+                        <a href="#" onclick="confirmarBorrado({{ $candidatura->idCandidatura }})">Borrar</a>
+                    </td>
                 </tr>
             @endforeach
         </tbody>
     </table>
-    <button>Añadir candidatura</button>
+    <a href="{{ route('candidatura.crear') }}">
+        <button>Añadir candidatura</button>
+    </a>
+
 
     <h3>Candidatos</h3>
     <table>
