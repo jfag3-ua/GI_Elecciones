@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route; # Addition
 use App\Http\Controllers\PaginaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegistroController;
+use App\Http\Controllers\CandidaturaController;
 
 use App\Http\Controllers\ResultadosController;
 
@@ -28,3 +29,7 @@ Route::get('/predicciones', [PaginaController::class, 'predicciones'])->name('pr
 /*Route::get('/resultados', [PaginaController::class, 'resultados'])->name('resultados');*/
 Route::get('/administracion', [PaginaController::class, 'administracion'])->name('administracion');
 Route::get('/usuario', [PaginaController::class, 'usuario'])->name('usuario');
+
+Route::get('/candidatura/editar/{id}', [CandidaturaController::class, 'editar'])->name('candidatura.editar');
+Route::post('/candidatura/editar/{id}', [CandidaturaController::class, 'actualizar'])->name('candidatura.actualizar');
+

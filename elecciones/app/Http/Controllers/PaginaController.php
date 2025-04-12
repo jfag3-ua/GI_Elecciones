@@ -23,8 +23,35 @@ class PaginaController extends Controller
     }
 
     public function voto() {
-        return view('voto');
-    }
+        $usuario = Auth::guard('web')->user();
+    
+        $censo = DB::table('censo')
+                    ->where('NIF', $usuario->NIF)
+                    ->first();
+    
+        $direccion = DB::table('direcciones')
+                    ->where('IDDIRECCION', $censo->IDDIRECCION)
+                    ->first();
+    
+        // Obtener la circunscripción en función de la provincia
+        $provincia = $direccion->PROVINCIA;
+        $idCircunscripcion = null;
+    
+        if ($provincia === 'Alicante') {
+            $idCircunscripcion = 1;
+        } elseif ($provincia === 'Valencia') {
+            $idCircunscripcion = 2;
+        } elseif ($provincia === 'Castellón') {
+            $idCircunscripcion = 3;
+        }
+    
+        // Obtener las candidaturas correspondientes
+        $candidaturas = DB::table('candidatura')
+                            ->where('idCircunscripcion', $idCircunscripcion)
+                            ->get();
+    
+        return view('voto', compact('usuario', 'censo', 'direccion', 'candidaturas'));
+    }    
 
     public function predicciones() {
         if (!file_exists(storage_path('/app/datasets/predictions_dataset.csv'))) {
@@ -77,10 +104,10 @@ class PaginaController extends Controller
         return view('resultados');
     }
 
-
-
-    public function administracion() {
-        return view('administracion');
+    public function administracion()
+    {
+        $candidaturas = DB::table('candidatura')->get();
+        return view('administracion', compact('candidaturas'));
     }
 
     public function usuario()

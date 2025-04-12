@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
     <link rel="stylesheet" href="/css/custom.css">
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <body>
     <header>
         <nav>
@@ -43,7 +44,6 @@
     <main>
         @yield('content') <!-- Aquí se mostrará el contenido de cada vista específica -->
     </main>
-
     <footer>
         <div class="footer-content">
             <p>&copy; TaxFraud. Todos los derechos reservados.</p>
