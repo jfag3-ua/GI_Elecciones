@@ -35,6 +35,18 @@
         }
     </style>
 
+    @if (session('success'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Candidatura actualizada',
+                text: '{{ session('success') }}',
+                confirmButtonText: 'Aceptar',
+                confirmButtonColor: '#8c0c34'
+            });
+        </script>
+    @endif
+
     <h2>Administrar</h2>
     <p class="notice">Aquí un administrador puede realizar tareas de control y administración (<b>un administrador no puede votar</b>).</p>
 
@@ -70,6 +82,14 @@
         </tbody>
     </table>
     
+    @php
+    $circunscripciones = [
+        1 => 'Alicante',
+        2 => 'Valencia',
+        3 => 'Castellón'
+    ];
+    @endphp
+
     <h3>Candidaturas</h3>
     <table>
         <thead>
@@ -77,20 +97,22 @@
                 <th>Id</th>
                 <th>Nombre</th>
                 <th>Escaños obtenidos</th>
-                <th>Id Circunscripción</th>
-                <th>Modificar</th>
+                <th>Circunscripción</th>
+                <th>Editar</th>
                 <th>Borrar</th>
             </tr>
         </thead>
         <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><a href>Modificar</a></td>
-                <td><a href>Borrar</a></td>
-            </tr>
+            @foreach ($candidaturas as $candidatura)
+                <tr>
+                    <td>{{ $candidatura->idCandidatura }}</td>
+                    <td>{{ $candidatura->nombre }}</td>
+                    <td>{{ $candidatura->escanyosElegidos }}</td>
+                    <td>{{ $circunscripciones[$candidatura->idCircunscripcion] ?? 'Desconocida' }}</td>
+                    <td><a href="{{ route('candidatura.editar', $candidatura->idCandidatura) }}">Editar</a></td>
+                    <td><a href>Borrar</a></td>
+                </tr>
+            @endforeach
         </tbody>
     </table>
     <button>Añadir candidatura</button>
@@ -104,7 +126,7 @@
                 <th>Apellidos</th>
                 <th>Elegido</th>
                 <th>Id Candidatura</th>
-                <th>Modificar</th>
+                <th>Editar</th>
                 <th>Borrar</th>
             </tr>
         </thead>
@@ -115,7 +137,7 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td><a href>Modificar</a></td>
+                <td><a href>Editar</a></td>
                 <td><a href>Borrar</a></td>
             </tr>
         </tbody>
