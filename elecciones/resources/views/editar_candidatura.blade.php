@@ -1,9 +1,9 @@
 @extends('layouts.app')
 
-@section('title', 'Editar Candidatura')
+@section('title', 'Editar candidatura')
 
 @section('content')
-    <h2>Editar Candidatura</h2>
+    <h2>Editar candidatura</h2>
     
     <form method="POST" action="{{ route('candidatura.actualizar', $candidatura->idCandidatura) }}">
         @csrf

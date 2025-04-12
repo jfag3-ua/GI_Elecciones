@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Models\Candidatura;
 
 class CandidaturaController extends Controller
 {
@@ -34,6 +35,33 @@ class CandidaturaController extends Controller
                 'idCircunscripcion' => $validated['idCircunscripcion'],
             ]);
 
-        return redirect()->route('administracion')->with('success', 'La candidatura ha sido actualizada correctamente');
+        return redirect()->route('administracion')->with('successActualizar', 'La candidatura ha sido actualizada correctamente');
+    }
+
+    public function crear()
+    {
+        return view('anyadir_candidatura');
+    }
+
+    public function guardar(Request $request)
+    {
+        $request->validate([
+            'nombre' => 'required|string|max:255',
+            'idCircunscripcion' => 'required|integer'
+        ]);
+
+        Candidatura::create([
+            'nombre' => $request->nombre,
+            'idCircunscripcion' => $request->idCircunscripcion,
+            'escanyosElegidos' => 0
+        ]);
+
+        return redirect()->route('administracion')->with('successAnyadir', 'La candidatura ha sido añadida correctamente');
+    }
+
+    public function eliminar($id)
+    {
+        Candidatura::destroy($id); // o Candidatura::find($id)->delete();
+        return redirect()->route('administracion')->with('successEliminar', 'La candidatura ha sido eliminada correctamente');
     }
 }

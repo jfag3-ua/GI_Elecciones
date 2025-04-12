@@ -30,6 +30,18 @@ Route::get('/predicciones', [PaginaController::class, 'predicciones'])->name('pr
 Route::get('/administracion', [PaginaController::class, 'administracion'])->name('administracion');
 Route::get('/usuario', [PaginaController::class, 'usuario'])->name('usuario');
 
-Route::get('/candidatura/editar/{id}', [CandidaturaController::class, 'editar'])->name('candidatura.editar');
-Route::post('/candidatura/editar/{id}', [CandidaturaController::class, 'actualizar'])->name('candidatura.actualizar');
+// Formulario de edición de candidatura
+Route::get('/administracion/candidatura/editar/{id}', [CandidaturaController::class, 'editar'])->name('candidatura.editar');
+// Actualizar candidatura
+Route::post('/administracion/candidatura/editar/{id}', [CandidaturaController::class, 'actualizar'])->name('candidatura.actualizar');
+
+// Mostrar formulario para añadir candidatura
+Route::get('/administracion/candidatura/crear', [CandidaturaController::class, 'crear'])->name('candidatura.crear');
+// Guardar candidatura
+Route::post('/administracion/candidatura/crear', [CandidaturaController::class, 'guardar'])->name('candidatura.guardar');
+
+// Borrar candidatura
+Route::delete('administracion/candidatura/borrar/{id}', [CandidaturaController::class, 'eliminar'])->name('candidatura.eliminar');
+
+
 
