@@ -33,7 +33,7 @@ class CandidatoController
             'idCandidatura' => $request->idCandidatura,
         ]);
 
-        return redirect()->route('administracion')->with('successActualizar', 'El candidato ha sido actualizada correctamente');
+        return redirect()->route('administracion')->with('successActualizarCandidato', 'El candidato ha sido actualizado correctamente');
     }
     public function crear()
     {
@@ -56,14 +56,12 @@ class CandidatoController
             'idCandidatura' => $request->idCandidatura,
         ]);
 
-        return redirect()->route('administracion')->with('success', 'Candidato creado correctamente.');
+        return redirect()->route('administracion')->with('successAnyadirCandidato', 'El candidato ha sido añadido correctamente');
     }
     public function borrar($id)
     {
         DB::table('candidato')->where('idCandidato', $id)->delete();
 
-        return redirect()->route('administracion')->with('success', 'Candidato borrado correctamente.');
+        return redirect()->route('administracion')->with('successEliminarCandidato', 'El candidato ha sido eliminado correctamente');
     }
-
-
 }
