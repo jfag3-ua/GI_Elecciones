@@ -38,7 +38,17 @@
                 <a href="{{ route('resultados') }}" class="{{ request()->routeIs('resultados') ? 'current' : '' }}">Resultados</a>
                 <a href="{{ route('predicciones') }}" class="{{ request()->routeIs('predicciones') ? 'current' : '' }}">Predicciones</a>
                 <a href="{{ route('usuario') }}" class="{{ request()->routeIs('usuario') ? 'current' : '' }}">Usuario</a>
+
+
             @endauth
+            @if (Auth::guard('web')->check() || Auth::guard('admin')->check())
+            <form method="POST" action="{{ route('logout') }}" style="display: inline;">
+                @csrf
+                <button type="submit" class="{{ request()->routeIs('voto') ? 'current' : '' }}">
+                    Cerrar sesión
+                </button>
+            </form>
+            @endif
         </nav>
     </header>
     <main>

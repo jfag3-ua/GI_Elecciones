@@ -124,7 +124,7 @@
             </tr>
         </tbody>
     </table>
-    
+
     @php
     $circunscripciones = [
         1 => 'Alicante',
@@ -134,7 +134,7 @@
     @endphp
 
     <h3>Candidaturas</h3>
-    
+
     <table>
         <thead>
             <tr>
@@ -181,31 +181,45 @@
     <a href="{{ route('candidatura.crear') }}">
         <button>Añadir candidatura</button>
     </a>
+<div class="margin-top: 20px;">
+    {{ $candidaturas->appends(request()->except('candidaturas_page'))->links('pagination::simple-default') }}
+</div>
 
-    <h3>Candidatos</h3>
-    <table>
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nombre</th>
-                <th>Apellidos</th>
-                <th>Elegido</th>
-                <th>Id Candidatura</th>
-                <th>Editar</th>
-                <th>Borrar</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td></td>
-                <td><a href>✏️</a></td>
-                <td><a href>🗑️</a></td>
-            </tr>
-        </tbody>
-    </table>
-    <button>Añadir candidato</button>
+<h3>Candidatos</h3>
+<table>
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Nombre</th>
+        <th>Apellidos</th>
+        <th>Elegido</th>
+        <th>Id Candidatura</th>
+        <th>Editar</th>
+        <th>Borrar</th>
+    </tr>
+    </thead>
+    <tbody>
+    @foreach ($candidatos as $candidato)
+    <tr>
+        <td>{{ $candidato->idCandidato }}</td>
+        <td>{{ $candidato->nombre }}</td>
+        <td>{{ $candidato->apellidos }}</td>
+        <td>{{ $candidato->elegido ? 'Sí' : 'No' }}</td>
+        <td>{{ $candidato->idCandidatura }}</td>
+        <td><a href="{{ route('candidato.editar', $candidato->idCandidato) }}">✏️</a></td>
+        <td>
+            <form action="{{ route('candidato.borrar', $candidato->idCandidato) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres borrar este candidato?');">
+                @csrf
+                @method('DELETE')
+                <button type="submit">🗑️</button>
+            </form>
+        </td>
+    </tr>
+    @endforeach
+    </tbody>
+</table>
+<a href="{{ route('candidato.crear') }}">➕ Crear nuevo candidato</a>
+<div class="margin-top: 20px;">
+    {{ $candidatos->appends(request()->except('candidatos_page'))->links('pagination::simple-default') }}
+</div>
 @endsection
