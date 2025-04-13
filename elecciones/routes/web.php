@@ -5,6 +5,7 @@ use App\Http\Controllers\PaginaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\CandidaturaController;
+use App\Http\Controllers\CandidatoController;
 
 use App\Http\Controllers\ResultadosController;
 
@@ -43,5 +44,12 @@ Route::post('/administracion/candidatura/crear', [CandidaturaController::class, 
 // Borrar candidatura
 Route::delete('administracion/candidatura/borrar/{id}', [CandidaturaController::class, 'eliminar'])->name('candidatura.eliminar');
 
+Route::get('/administracion/candidato/editar/{id}', [CandidatoController::class, 'editar'])->name('candidato.editar');
+Route::post('/administracion/candidato/actualizar/{id}', [CandidatoController::class, 'actualizar'])->name('candidato.actualizar');
+// Mostrar formulario
+Route::get('/administracion/candidato/crear', [CandidatoController::class, 'crear'])->name('candidato.crear');
 
+// Guardar candidato
+Route::post('/administracion/candidato/guardar', [CandidatoController::class, 'guardar'])->name('candidato.guardar');
+Route::delete('/administracion/candidato/borrar/{id}', [CandidatoController::class, 'borrar'])->name('candidato.borrar');
 

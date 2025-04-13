@@ -13,7 +13,7 @@ class PaginaController extends Controller
     public function landing() {
         return view('landing');
     }
-    
+
     public function inicio() {
         return view('inicio');
     }
@@ -24,19 +24,19 @@ class PaginaController extends Controller
 
     public function voto() {
         $usuario = Auth::guard('web')->user();
-    
+
         $censo = DB::table('censo')
                     ->where('NIF', $usuario->NIF)
                     ->first();
-    
+
         $direccion = DB::table('direcciones')
                     ->where('IDDIRECCION', $censo->IDDIRECCION)
                     ->first();
-    
+
         // Obtener la circunscripción en función de la provincia
         $provincia = $direccion->PROVINCIA;
         $idCircunscripcion = null;
-    
+
         if ($provincia === 'Alicante') {
             $idCircunscripcion = 1;
         } elseif ($provincia === 'Valencia') {
@@ -44,14 +44,14 @@ class PaginaController extends Controller
         } elseif ($provincia === 'Castellón') {
             $idCircunscripcion = 3;
         }
-    
+
         // Obtener las candidaturas correspondientes
         $candidaturas = DB::table('candidatura')
                             ->where('idCircunscripcion', $idCircunscripcion)
                             ->get();
-    
+
         return view('voto', compact('usuario', 'censo', 'direccion', 'candidaturas'));
-    }    
+    }
 
     public function predicciones() {
         if (!file_exists(storage_path('/app/datasets/predictions_dataset.csv'))) {
@@ -60,27 +60,27 @@ class PaginaController extends Controller
 
         $csv = Reader::createFromPath(storage_path('/app/datasets/predictions_dataset.csv'), 'r');
         $csv->setHeaderOffset(0); // Usa la primera fila como encabezados
-    
+
         // $years = $csv->getHeader(); // Obtener los años como columnas
         $years = array_reverse($csv->getHeader()); // Invertir el orden de los años
         $abstencion = [];
         $blanco = [];
         $nulo = [];
-    
+
         foreach ($csv as $index => $row) {
             foreach ($years as $year) {
                 // Reemplazar caracteres especiales en el JSON
                 $replacements = [
-                    "'"  => '"',   
+                    "'"  => '"',
                 ];
 
                 // Decodificar los valores almacenados como diccionario en el CSV
                 $dictionary = json_decode(strtr($row[$year], $replacements), true);
-    
+
                 if ($index == 1) {
                     $abstencion[$year][] = $dictionary;
                 }
-                 
+
                 elseif ($index == 2) {
                     $blanco[$year][] = $dictionary;
                 }
@@ -112,9 +112,11 @@ class PaginaController extends Controller
             $query->where('idCircunscripcion', $request->input('circunscripcion'));
         }
 
-        $candidaturas = $query->get();
+        $candidaturas = DB::table('candidatura')->paginate(10, ['*'], 'candidaturas_page');
+        $candidatos = DB::table('candidato')->paginate(10, ['*'], 'candidatos_page');
 
-        return view('administracion', compact('candidaturas'));
+
+        return view('administracion', compact('candidaturas','candidatos'));
     }
 
     public function usuario()

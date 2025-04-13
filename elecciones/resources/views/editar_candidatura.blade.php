@@ -4,7 +4,7 @@
 
 @section('content')
     <h2>Editar candidatura</h2>
-    
+
     <form method="POST" action="{{ route('candidatura.actualizar', $candidatura->idCandidatura) }}">
         @csrf
         <div>
@@ -39,6 +39,9 @@
         </div>
         <div>
             <button type="submit">Guardar cambios</button>
+            <a href="{{ url()->previous() }}">
+                <button type="button">Cancelar</button>
+            </a>
         </div>
     </form>
 @endsection
