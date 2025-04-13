@@ -12,3 +12,10 @@
   --marked: #ffdd33;
   --disabled: #efefef;
 }
+
+.filtro-form {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  margin-bottom: 1em;
+}

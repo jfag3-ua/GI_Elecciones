@@ -90,7 +90,6 @@
         }
     </script>
 
-
     <h2>Administrar</h2>
     <p class="notice">Aquí un administrador puede realizar tareas de control y administración (<b>un administrador no puede votar</b>).</p>
 
@@ -135,13 +134,26 @@
     @endphp
 
     <h3>Candidaturas</h3>
+    
     <table>
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Nombre</th>
                 <th>Escaños obtenidos</th>
-                <th>Circunscripción</th>
+                <th>
+                    <form method="GET" action="{{ route('administracion') }}">
+                        <label for="circunscripcion">Circunscripción</label>
+                        <select name="circunscripcion" id="circunscripcion" onchange="this.form.submit()">
+                            <option value="">Todas</option>
+                            @foreach ($circunscripciones as $id => $nombre)
+                                <option value="{{ $id }}" {{ request('circunscripcion') == $id ? 'selected' : '' }}>
+                                    {{ $nombre }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </form>
+                </th>
                 <th>Editar</th>
                 <th>Borrar</th>
             </tr>
@@ -153,14 +165,14 @@
                     <td>{{ $candidatura->nombre }}</td>
                     <td>{{ $candidatura->escanyosElegidos }}</td>
                     <td>{{ $circunscripciones[$candidatura->idCircunscripcion] ?? 'Desconocida' }}</td>
-                    <td><a href="{{ route('candidatura.editar', $candidatura->idCandidatura) }}">Editar</a></td>
+                    <td><a href="{{ route('candidatura.editar', $candidatura->idCandidatura) }}">✏️</a></td>
                     <!-- Formulario oculto para eliminar -->
                     <td>
                         <form id="form-borrar-{{ $candidatura->idCandidatura }}" method="POST" action="{{ route('candidatura.eliminar', $candidatura->idCandidatura) }}" style="display: none;">
                             @csrf
                             @method('DELETE')
                         </form>
-                        <a href="#" onclick="confirmarBorrado({{ $candidatura->idCandidatura }})">Borrar</a>
+                        <a href="#" onclick="confirmarBorrado({{ $candidatura->idCandidatura }})">🗑️</a>
                     </td>
                 </tr>
             @endforeach
@@ -169,7 +181,6 @@
     <a href="{{ route('candidatura.crear') }}">
         <button>Añadir candidatura</button>
     </a>
-
 
     <h3>Candidatos</h3>
     <table>
@@ -191,8 +202,8 @@
                 <td></td>
                 <td></td>
                 <td></td>
-                <td><a href>Editar</a></td>
-                <td><a href>Borrar</a></td>
+                <td><a href>✏️</a></td>
+                <td><a href>🗑️</a></td>
             </tr>
         </tbody>
     </table>
