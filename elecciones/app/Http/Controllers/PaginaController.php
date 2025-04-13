@@ -112,7 +112,7 @@ class PaginaController extends Controller
             $query->where('idCircunscripcion', $request->input('circunscripcion'));
         }
 
-        $candidaturas = DB::table('candidatura')->paginate(10, ['*'], 'candidaturas_page');
+        $candidaturas = $query->paginate(10, ['*'], 'candidaturas_page');
         $candidatos = DB::table('candidato')->paginate(10, ['*'], 'candidatos_page');
 
 

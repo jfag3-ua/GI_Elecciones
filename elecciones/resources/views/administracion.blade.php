@@ -71,11 +71,64 @@
         </script>
     @endif
 
+    @if (session('successActualizarCandidato'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Candidato actualizado',
+                text: '{{ session('successActualizarCandidato') }}',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    @endif
+
+    @if (session('successAnyadirCandidato'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Candidato añadido',
+                text: '{{ session('successAnyadirCandidato') }}',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    @endif
+
+    @if (session('successEliminarCandidato'))
+        <script>
+            Swal.fire({
+                icon: 'success',
+                title: 'Candidato eliminado',
+                text: '{{ session('successEliminarCandidato') }}',
+                confirmButtonColor: '#3085d6',
+                confirmButtonText: 'Aceptar'
+            });
+        </script>
+    @endif
+
     <script>
-        function confirmarBorrado(id) {
+        function confirmarBorradoCandidatura(id) {
             Swal.fire({
                 title: '¿Estás seguro?',
                 text: "La candidatura se borrará",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d33',
+                cancelButtonColor: '#3085d6',
+                confirmButtonText: 'Sí, borrar',
+                cancelButtonText: 'Cancelar'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    document.getElementById('form-borrar-' + id).submit();
+                }
+            });
+        }
+
+        function confirmarBorradoCandidato(id) {
+            Swal.fire({
+                title: '¿Estás seguro?',
+                text: "El candidato se borrará",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#d33',
@@ -165,14 +218,13 @@
                     <td>{{ $candidatura->nombre }}</td>
                     <td>{{ $candidatura->escanyosElegidos }}</td>
                     <td>{{ $circunscripciones[$candidatura->idCircunscripcion] ?? 'Desconocida' }}</td>
-                    <td><a href="{{ route('candidatura.editar', $candidatura->idCandidatura) }}">✏️</a></td>
-                    <!-- Formulario oculto para eliminar -->
+                    <td><a href="{{ route('candidatura.editar', $candidatura->idCandidatura) }}"><button>✏️</button></a></td>
                     <td>
-                        <form id="form-borrar-{{ $candidatura->idCandidatura }}" method="POST" action="{{ route('candidatura.eliminar', $candidatura->idCandidatura) }}" style="display: none;">
+                        <form id="form-borrar-{{ $candidatura->idCandidatura }}" method="POST" action="{{ route('candidatura.eliminar', $candidatura->idCandidatura) }}">
                             @csrf
                             @method('DELETE')
+                            <button type="button" onclick="confirmarBorradoCandidatura({{ $candidatura->idCandidatura }})">🗑️</button>
                         </form>
-                        <a href="#" onclick="confirmarBorrado({{ $candidatura->idCandidatura }})">🗑️</a>
                     </td>
                 </tr>
             @endforeach
@@ -181,45 +233,48 @@
     <a href="{{ route('candidatura.crear') }}">
         <button>Añadir candidatura</button>
     </a>
-<div class="margin-top: 20px;">
-    {{ $candidaturas->appends(request()->except('candidaturas_page'))->links('pagination::simple-default') }}
-</div>
+    <div class="margin-top: 20px;">
+        {{ $candidaturas->appends(request()->except('candidaturas_page'))->links('pagination::simple-default') }}
+    </div>
 
-<h3>Candidatos</h3>
-<table>
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Nombre</th>
-        <th>Apellidos</th>
-        <th>Elegido</th>
-        <th>Id Candidatura</th>
-        <th>Editar</th>
-        <th>Borrar</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach ($candidatos as $candidato)
-    <tr>
-        <td>{{ $candidato->idCandidato }}</td>
-        <td>{{ $candidato->nombre }}</td>
-        <td>{{ $candidato->apellidos }}</td>
-        <td>{{ $candidato->elegido ? 'Sí' : 'No' }}</td>
-        <td>{{ $candidato->idCandidatura }}</td>
-        <td><a href="{{ route('candidato.editar', $candidato->idCandidato) }}">✏️</a></td>
-        <td>
-            <form action="{{ route('candidato.borrar', $candidato->idCandidato) }}" method="POST" onsubmit="return confirm('¿Estás seguro de que quieres borrar este candidato?');">
-                @csrf
-                @method('DELETE')
-                <button type="submit">🗑️</button>
-            </form>
-        </td>
-    </tr>
-    @endforeach
-    </tbody>
-</table>
-<a href="{{ route('candidato.crear') }}">➕ Crear nuevo candidato</a>
-<div class="margin-top: 20px;">
-    {{ $candidatos->appends(request()->except('candidatos_page'))->links('pagination::simple-default') }}
-</div>
+    <h3>Candidatos</h3>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nombre</th>
+                <th>Apellidos</th>
+                <th>Elegido</th>
+                <th>Id Candidatura</th>
+                <th>Editar</th>
+                <th>Borrar</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach ($candidatos as $candidato)
+                <tr>
+                    <td>{{ $candidato->idCandidato }}</td>
+                    <td>{{ $candidato->nombre }}</td>
+                    <td>{{ $candidato->apellidos }}</td>
+                    <td>{{ $candidato->elegido ? 'Sí' : 'No' }}</td>
+                    <td>{{ $candidato->idCandidatura }}</td>
+                    <td><a href="{{ route('candidato.editar', $candidato->idCandidato) }}"><button>✏️</button></a></td>
+                    <td>
+                        <form id="form-borrar-{{ $candidato->idCandidato }}" action="{{ route('candidato.borrar', $candidato->idCandidato) }}" method="POST">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" onclick="confirmarBorradoCandidato({{ $candidato->idCandidato }})">🗑️</button>
+                        </form>
+                    </td>
+                </tr>
+            @endforeach
+        </tbody>
+    </table>
+    <a href="{{ route('candidato.crear') }}">
+        <button>Añadir candidato</button>
+    </a>
+    <div class="margin-top: 20px;">
+        {{ $candidatos->appends(request()->except('candidatos_page'))->links('pagination::simple-default') }}
+    </div>
 @endsection
