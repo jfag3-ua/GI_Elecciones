@@ -104,9 +104,16 @@ class PaginaController extends Controller
         return view('resultados');
     }
 
-    public function administracion()
+    public function administracion(Request $request)
     {
-        $candidaturas = DB::table('candidatura')->get();
+        $query = DB::table('candidatura');
+
+        if ($request->filled('circunscripcion')) {
+            $query->where('idCircunscripcion', $request->input('circunscripcion'));
+        }
+
+        $candidaturas = $query->get();
+
         return view('administracion', compact('candidaturas'));
     }
 
