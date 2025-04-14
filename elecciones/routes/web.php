@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route; # Addition
 use App\Http\Controllers\PaginaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RegistroController;
+use App\Http\Controllers\CandidaturaController;
 
 
 // Rutas sin restricción de acceso
@@ -17,7 +18,8 @@ Route::post('/registro', [RegistroController::class, 'register'])->name('registr
 Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->name('registro2.form');
 
 // Rutas protegidas con middleware 'auth' (NO FUNCIONA, HAY QUE REVISAR EL INICIO DE SESIÓN)
-Route::get('/voto', [PaginaController::class, 'voto'])->name('voto');
+Route::get('/voto', [CandidaturaController::class, 'votar'])->name('voto');
+Route::post('/guardar-voto', [CandidaturaController::class, 'guardarVoto'])->name('guardar.voto');
 Route::get('/predicciones', [PaginaController::class, 'predicciones'])->name('predicciones');
 Route::get('/resultados', [PaginaController::class, 'resultados'])->name('resultados');
 Route::get('/administracion', [PaginaController::class, 'administracion'])->name('administracion');
