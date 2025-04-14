@@ -13,17 +13,18 @@ class Voto extends Model
     protected $table = 'voto';
 
     // Campos asignables
-    protected $fillable = ['candidato_id', 'provincia_id'];
-
+    protected $fillable = ['voto', 'localizacion_id'];  // Usamos 'voto' en lugar de 'candidato_id' y 'localizacion_id' en lugar de 'provincia_id'
+    
+    public $timestamps = false;
     // Relación con Candidatura
     public function candidatura()
     {
-        return $this->belongsTo(Candidatura::class, 'candidato_id');
+        return $this->belongsTo(Candidatura::class, 'voto');  // Relacionamos el nombre del candidato
     }
 
-    // Relación con Provincia
-    public function provincia()
+    // Relación con Localizacion (no Provincia)
+    public function localizacion()
     {
-        return $this->belongsTo(Provincia::class, 'provincia_id');
+        return $this->belongsTo(Localizacion::class, 'localizacion_id');  // Cambiamos 'provincia_id' por 'localizacion_id'
     }
 }
