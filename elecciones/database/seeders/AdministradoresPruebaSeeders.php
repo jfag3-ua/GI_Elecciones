@@ -16,7 +16,7 @@ class AdministradoresPruebaSeeders extends Seeder
     {
         Admin::create([
             'NIF' => '11111111A',
-            'NOMBREUSUARIO' => 'adminsitrador1',
+            'NOMBREUSUARIO' => 'administrador1',
             'CONTRASENYA' => Hash::make('1234'),
         ]);
 

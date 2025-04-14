@@ -3,10 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', 'Eleccions Valencianas')</title>
+    <title>@yield('title', 'Eleccions Valencianes')</title>
     <link rel="stylesheet" href="https://cdn.simplecss.org/simple.min.css">
     <link rel="stylesheet" href="/css/custom.css">
 </head>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <body>
     <header>
         <nav>
@@ -29,10 +30,6 @@
                 <a href="{{ route('resultados') }}" class="{{ request()->routeIs('resultados') ? 'current' : '' }}">Resultados</a>
                 <a href="{{ route('predicciones') }}" class="{{ request()->routeIs('predicciones') ? 'current' : '' }}">Predicciones</a>
                 <a href="{{ route('usuario') }}" class="{{ request()->routeIs('usuario') ? 'current' : '' }}">Usuario</a>
-                <form action="{{ route('logout') }}" method="POST" style="display:inline;">
-                    @csrf
-                    <button type="submit">Cerrar sesión</button>
-                </form>
             @endauth
 
             {{-- Menú para usuario (guard web) --}}
@@ -47,7 +44,6 @@
     <main>
         @yield('content') <!-- Aquí se mostrará el contenido de cada vista específica -->
     </main>
-
     <footer>
         <div class="footer-content">
             <p>&copy; TaxFraud. Todos los derechos reservados.</p>

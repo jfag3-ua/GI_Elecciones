@@ -7,7 +7,7 @@
 
     <!-- Mostrar mensaje si el usuario ya ha votado -->
     @if (isset($votado) && $votado)
-        <p class="notice">Ya has votado. Gracias por participar.</p>
+        <p class="notice">Tu voto ya ha sido <b>registrado</b>. Gracias por participar.</p>
     @else
         <p class="notice">Selecciona el candidato que deseas votar. Solo puedes seleccionar una opción. Una vez confirmado, tu voto será registrado de forma <b>definitiva</b>.</p>
         <article>
