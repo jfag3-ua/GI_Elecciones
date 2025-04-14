@@ -91,7 +91,7 @@ class CandidaturaController extends Controller
         $usuario->save();
 
         // Redirigir con mensaje de éxito
-        return redirect()->route('voto')->with('success', 'Tu voto ha sido registrado correctamente.');
+        return redirect()->route('voto')->with('successVotoRegistrado', 'Tu voto ha sido registrado correctamente');
     }
 
     // Mostrar el formulario de edición
