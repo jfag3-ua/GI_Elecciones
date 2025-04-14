@@ -15,16 +15,24 @@ class CandidaturaController extends Controller
     // Método para mostrar las candidaturas
     public function votar()
     {
+        // Obtener el usuario autenticado
+        $usuario = Auth::user();
+
+        // Verificar si el usuario ya ha votado
+        if ($usuario->votado == 1) {
+            // Si ya ha votado, redirigir a la vista de resultados o mostrar un mensaje
+            return view('voto')->with('votado', true);  // Puedes pasar una variable 'votado' para mostrar el mensaje en la vista
+        }
+
         // Obtener todas las candidaturas desde la base de datos, ordenadas por nombre
         $candidaturas = DB::table('usuario')
-        ->join('censo', 'usuario.NIF', '=', 'censo.NIF')  // Cruza con censo por NIF
-        ->join('direcciones', 'censo.IDDIRECCION', '=', 'direcciones.IDDIRECCION')  // Cruza con direcciones por IDDIRECCION
-        ->join('circunscripcion', 'direcciones.PROVINCIA', '=', 'circunscripcion.Nombre')  // Cruza con circunscripcion por PROVINCIA
-        ->join('candidatura', 'circunscripcion.idCircunscripcion', '=', 'candidatura.idCircunscripcion')  // Cruza con candidaturas por idCircunscripcion
-        ->where('usuario.NIF', auth()->user()->NIF)  // Filtra por el NIF del usuario autenticado
-        ->select('candidatura.*')  // Selecciona las candidaturas correspondientes
-        ->get();
-
+            ->join('censo', 'usuario.NIF', '=', 'censo.NIF')  // Cruza con censo por NIF
+            ->join('direcciones', 'censo.IDDIRECCION', '=', 'direcciones.IDDIRECCION')  // Cruza con direcciones por IDDIRECCION
+            ->join('circunscripcion', 'direcciones.PROVINCIA', '=', 'circunscripcion.Nombre')  // Cruza con circunscripcion por PROVINCIA
+            ->join('candidatura', 'circunscripcion.idCircunscripcion', '=', 'candidatura.idCircunscripcion')  // Cruza con candidaturas por idCircunscripcion
+            ->where('usuario.NIF', auth()->user()->NIF)  // Filtra por el NIF del usuario autenticado
+            ->select('candidatura.*')  // Selecciona las candidaturas correspondientes
+            ->get();
 
         // Pasar la variable $candidaturas a la vista 'voto'
         return view('voto', compact('candidaturas'));
