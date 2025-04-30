@@ -14,13 +14,13 @@ Route::get('/resultados/{year?}', [ResultadosController::class, 'index'])->name(
 
 // Rutas sin restricción de acceso
 Route::get('/', [PaginaController::class, 'landing'])->name('landing');
-Route::get('/inicio', [PaginaController::class, 'inicio'])->name('inicio'); // Mostrar formulario de login
+Route::get('/inicio', [PaginaController::class, 'inicio'])->middleware('guest')->name('inicio');
 Route::post('/login', [AuthController::class, 'login'])->name('login'); // Procesar inicio de sesión
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout'); // Cerrar sesión
 
-Route::get('/registro', [PaginaController::class, 'registro'])->name('registro');
-Route::post('/registro', [RegistroController::class, 'register'])->name('registro2');
-Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->name('registro2.form');
+Route::get('/registro', [PaginaController::class, 'registro'])->middleware('guest')->name('registro');
+Route::post('/registro', [RegistroController::class, 'register'])->middleware('guest')->name('registro2');
+Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->middleware('guest')->name('registro2.form');
 
 Route::get('/login', [PaginaController::class, 'inicio'])->name('login.form');
 
@@ -54,4 +54,3 @@ Route::get('/administracion/candidato/crear', [CandidatoController::class, 'crea
 // Guardar candidato
 Route::post('/administracion/candidato/guardar', [CandidatoController::class, 'guardar'])->middleware(['auth', 'isAdmin'])->name('candidato.guardar');
 Route::delete('/administracion/candidato/borrar/{id}', [CandidatoController::class, 'borrar'])->middleware(['auth', 'isAdmin'])->name('candidato.borrar');
-
