@@ -45,7 +45,6 @@
 
     {{-- Lista de años disponibles --}}
     <div>
-        <strong>Seleccionar año: </strong>
         @foreach ($years as $year)
             <a href="{{ route('resultados', ['year' => $year]) }}" 
             class="{{ $year == $selectedYear ? 'font-bold' : '' }}" 
@@ -54,6 +53,7 @@
             </a>
         @endforeach
     </div>
+    
     <h3>Información general sobre las elecciones de {{ $selectedYear }}</h3>
 
     @php

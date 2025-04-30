@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use App\Models\Admin;
 use App\Models\User; // Asumiendo tu modelo se llama User
+use App\Models\Candidatura; // Asumiendo tu modelo se llama Candidatura
 
 class AuthController extends Controller
 {
