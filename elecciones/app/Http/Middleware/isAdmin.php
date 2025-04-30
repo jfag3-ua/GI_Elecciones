@@ -3,23 +3,18 @@
 namespace App\Http\Middleware;
 
 use Closure;
-use Illuminate\Http\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\Auth;
 
-class isAdmin
+class IsAdmin
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
-     */
-    public function handle(Request $request, Closure $next): Response
+    public function handle($request, Closure $next)
     {
-        // Suponiendo que el usuario tiene una propiedad 'is_admin'
-        if (auth()->check() && auth()->user()->is_admin) {
+        // Verifica que esté logueado y que sea admin
+        if (Auth::check() && Auth::user()->ESADMIN == 1) {
             return $next($request);
         }
 
-        return redirect()->route('inicio')->with('error', 'Acceso restringido a administradores.');
+        // Si no es admin, redirige a alguna otra página
+        return redirect()->route('login')->with('error', 'Acceso denegado. No eres administrador.');
     }
 }

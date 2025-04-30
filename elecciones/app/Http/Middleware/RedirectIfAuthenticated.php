@@ -11,7 +11,8 @@ class RedirectIfAuthenticated
     public function handle(Request $request, Closure $next, ...$guards)
     {
         if (Auth::check()) {
-            return redirect('/home'); // o donde quieras redirigir si ya está logueado
+            // Redirigir a la página principal si ya está logueado
+            return redirect()->route('usuario'); // O cualquier otra ruta
         }
 
         return $next($request);
