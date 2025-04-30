@@ -20,11 +20,16 @@ Route::get('/registro', [PaginaController::class, 'registro'])->name('registro')
 Route::post('/registro', [RegistroController::class, 'register'])->name('registro2');
 Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->name('registro2.form');
 
+Route::get('/login', [PaginaController::class, 'inicio'])->name('login.form');
 
 
-// Rutas protegidas con middleware 'auth' (NO FUNCIONA, HAY QUE REVISAR EL INICIO DE SESIÓN)
-Route::get('/voto', [PaginaController::class, 'voto'])->name('voto');
-Route::get('/predicciones', [PaginaController::class, 'predicciones'])->name('predicciones');
+
+
+// Rutas protegidas con middleware 'auth'
+Route::get('/predicciones', [PaginaController::class, 'predicciones'])->middleware('auth')->name('predicciones');
+Route::get('/voto', [PaginaController::class, 'voto'])->middleware('auth')->name('voto');
+Route::get('/usuario', [PaginaController::class, 'usuario'])->middleware('auth')->name('usuario');
+Route::get('/administracion', [PaginaController::class, 'administracion'])->middleware(['auth', 'isAdmin'])->name('administracion');
+
+
 /*Route::get('/resultados', [PaginaController::class, 'resultados'])->name('resultados');*/
-Route::get('/administracion', [PaginaController::class, 'administracion'])->name('administracion');
-Route::get('/usuario', [PaginaController::class, 'usuario'])->name('usuario');
