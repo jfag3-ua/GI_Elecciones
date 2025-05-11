@@ -88,7 +88,9 @@
                             borderColor: color,
                             borderWidth: 2,
                             tension: 0.3,
-                            fill: true
+                            fill: true,
+                            pointRadius: 5,
+                            pointHoverRadius: 7
                         },
                         {
                             label: label + ' (Predicción)',
@@ -98,7 +100,9 @@
                             borderDash: [5, 5],
                             borderWidth: 2,
                             tension: 0.3,
-                            fill: true
+                            fill: true,
+                            pointRadius: 6,
+                            pointHoverRadius: 8
                         }
                     ]
                 },
@@ -126,6 +130,15 @@
                             },
                             titleFont: {
                                 size: tipSize // Título en el tooltip
+                            },
+                            filter: function(item) {
+                                // Oculta la entrada de predicción para el penúltimo año
+                                const yearIndex = item.dataIndex;
+                                const datasetLabel = item.dataset.label;
+                                const isPred = datasetLabel.includes('Predicción');
+                                const isPenultimate = yearIndex === (labels.length - 2);
+                                
+                                return !(isPred && isPenultimate);
                             }
                         }
                     },
