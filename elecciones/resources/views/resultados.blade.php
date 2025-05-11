@@ -4,56 +4,152 @@
 
 @section('content')
     <style>
+        /* Estilos generales de las tablas */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 30px; /* Aumentamos el margen entre las tablas */
+            font-family: 'Arial', sans-serif;
         }
         th, td {
-            border: 1px solid black;
-            padding: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #f4f4f4;
+            color: #333;
         }
         .label-column {
             text-align: left;
         }
         .divider-row {
-            border-bottom: 3px solid black;
+            border-bottom: 3px solid #000;
         }
         .text-porcentaje, .text-escano {
             color: #8c0c34;
             font-weight: bold;
         }
+
+        /* Contenedor de los gráficos */
         .chart-container {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 20px 0;
+            margin: 40px 0;
         }
+
+        /* Estilos de la paginación de los años */
+        .pagination-container {
+            display: flex;
+            justify-content: center;
+            margin-top: 20px;
+        }
+
+        /* Separación entre las dos filas de paginación */
+        .pagination-container-year {
+            margin-bottom: 20px; /* Añadimos espacio entre la fila de los años y la fila de las páginas */
+        }
+
+        .pagination {
+            list-style: none;
+            display: flex;
+            padding: 0;
+            margin: 0;
+            flex-wrap: wrap; /* Asegura que la paginación se ajuste en pantallas pequeñas */
+        }
+
+        .pagination li {
+            margin: 0 5px;
+        }
+
+        .pagination a {
+        text-decoration: none;
+        color: #8c0c34; /* texto granate */
+        padding: 5px 7px;
+        border-radius: 5px;
+        background-color: white; /* fondo blanco */
+        border: 1px solid #8c0c34;
+        transition: background-color 0.3s ease, color 0.3s ease;
+        font-size: 14px;
+    }
+
+        .pagination a:hover {
+            background-color: #8c0c34;
+            color: white;
+        }
+
+        .pagination .active a {
+            background-color: #8c0c34; /* Verde para la página activa */
+            color: white;
+            border: 1px solid #8c0c34;
+        }
+
+        /* Desaparecer flechas cuando no son posibles */
+        .pagination .disabled .pagination-arrow {
+            display: none;
+        }
+
+        /* Estilo de las flechas */
+        .pagination-arrow {
+            font-size: 18px;
+            font-weight: bold;
+            color: #007bff;
+            text-decoration: none;
+            padding: 10px;
+        }
+
+        /* Hacer la paginación más compacta en pantallas pequeñas */
+        @media (max-width: 600px) {
+            .pagination a {
+                padding: 8px 12px;
+                font-size: 12px;
+            }
+        }
+
+        /* Aumentamos el espacio entre las filas de la tabla */
+        .table-row {
+            margin-bottom: 20px; /* Añadimos espacio entre las filas */
+        }
+
     </style>
 
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-    @php
-        $votantes = [];
-    @endphp
-
     <h2>Resultados</h2>
 
     {{-- Lista de años disponibles --}}
-    <div>
-        @foreach ($years as $year)
-            <a href="{{ route('resultados', ['year' => $year]) }}" 
-            class="{{ $year == $selectedYear ? 'font-bold' : '' }}" 
-            style="margin-right: 10px;">
-                {{ $year }}
-            </a>
-        @endforeach
+    <div class="pagination-container-year">
+        <ul class="pagination">
+            @if ($selectedYear && $years)
+                @php
+                    $currentYearIndex = array_search($selectedYear, $years);
+                @endphp
+
+                {{-- Flecha de Anterior --}}
+                @if ($currentYearIndex > 0)
+                    <li><a href="{{ route('resultados', ['year' => $years[$currentYearIndex - 1]]) }}" class="pagination-arrow">&#8592;</a></li>
+                @else
+                    <li class="disabled"><span class="pagination-arrow">&#8592;</span></li>
+                @endif
+
+                {{-- Páginas de Años --}}
+                @foreach($years as $index => $year_option)
+                    <li class="{{ $selectedYear == $year_option ? 'active' : '' }}">
+                        <a href="{{ route('resultados', ['year' => $year_option]) }}">{{ $year_option }}</a>
+                    </li>
+                @endforeach
+
+                {{-- Flecha de Siguiente --}}
+                @if ($currentYearIndex < count($years) - 1)
+                    <li><a href="{{ route('resultados', ['year' => $years[$currentYearIndex + 1]]) }}" class="pagination-arrow">&#8594;</a></li>
+                @else
+                    <li class="disabled"><span class="pagination-arrow">&#8594;</span></li>
+                @endif
+            @endif
+        </ul>
     </div>
-    
+
     <h3>Información general sobre las elecciones de {{ $selectedYear }}</h3>
 
     @php
@@ -234,4 +330,3 @@
         @endforeach
     @endif
 @endsection
-
