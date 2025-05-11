@@ -60,8 +60,8 @@ class PaginaController extends Controller
         $csv = Reader::createFromPath(storage_path('/app/datasets/predictions_dataset.csv'), 'r');
         $csv->setHeaderOffset(0); // Usa la primera fila como encabezados
 
-        // $years = $csv->getHeader(); // Obtener los años como columnas
-        $years = array_reverse($csv->getHeader()); // Invertir el orden de los años
+        $years = $csv->getHeader(); // Obtener los años como columnas
+        //$years = array_reverse($csv->getHeader()); // Invertir el orden de los años
         $abstencion = [];
         $blanco = [];
         $nulo = [];
@@ -91,9 +91,9 @@ class PaginaController extends Controller
         }
 
         // Invertir el orden de los datos para que coincidan con los años invertidos
-        $abstencion = array_reverse($abstencion, true);
-        $blanco = array_reverse($blanco, true);
-        $nulo = array_reverse($nulo, true);
+        //$abstencion = array_reverse($abstencion, true);
+        //$blanco = array_reverse($blanco, true);
+        //$nulo = array_reverse($nulo, true);
 
         return view('predicciones', compact('abstencion', 'blanco', 'nulo', 'years'));
     }
