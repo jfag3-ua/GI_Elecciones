@@ -8,6 +8,30 @@
     <link rel="stylesheet" href="/css/custom.css">
     <style>
         /* CSS personalizado para la paginación */
+        nav a {
+            padding: 10px 15px;
+            border-radius: 5px;
+            margin-right: 8px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #8c0c34;
+            background-color: white;
+            border: 1px solid #8c0c34;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: rgb(255, 255, 255);
+            color: white;
+            border: 1px solid #8c0c34;
+        }
+
+        nav a.current {
+            background-color: rgb(255, 255, 255);
+            color: white;
+            border: 1px solid #8c0c34;
+        }
+
         .pagination-container {
             display: flex;
             justify-content: center;
@@ -22,13 +46,13 @@
         }
 
         .pagination li {
-            margin: 0 5px;
+            margin: 0px;
         }
 
         .pagination a {
             text-decoration: none;
-            color: #007bff;
-            padding: 10px 15px;
+            color: #8c0c34;
+            padding: 5px 7px;
             border-radius: 5px;
             background-color: #f8f9fa;
             border: 1px solid #ddd;
@@ -36,7 +60,7 @@
         }
 
         .pagination a:hover {
-            background-color: #007bff;
+            background-color: #8c0c34;
             color: white;
         }
 
@@ -46,23 +70,25 @@
         }
 
         .pagination .active a {
-            background-color: #007bff;
+            background-color: #8c0c34;
             color: white;
-            border: 1px solid #007bff;
+            border: 1px solid #8c0c34;
         }
 
         .pagination-arrow {
-            font-size: 18px;
+            font-size: 1px;
             font-weight: bold;
-            color: #007bff;
+            color: #8c0c34;
             text-decoration: none;
             padding: 10px;
         }
+
         .pagination-arrow:hover {
-            background-color: #007bff;
+            background-color: #8c0c34;
             color: white;
             border-radius: 5px;
         }
+
         .pagination .disabled .pagination-arrow {
             color: #ccc;
             pointer-events: none;
@@ -71,6 +97,17 @@
         .pagination .disabled {
             pointer-events: none;
         }
+
+        .page-selector {
+            margin-left: 15px;
+        }
+
+        .page-selector select {
+            padding: 5px;
+            font-size: 14px;
+            margin-left: 10px;
+        }
+
     </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>

@@ -29,7 +29,8 @@ Route::get('/login', [PaginaController::class, 'inicio'])->name('login.form');
 Route::get('/voto', [CandidaturaController::class, 'votar'])->middleware('auth')->name('voto');
 Route::post('/guardar-voto', [CandidaturaController::class, 'guardarVoto'])->middleware('auth')->name('guardar.voto');
 Route::get('/predicciones', [PaginaController::class, 'predicciones'])->middleware('auth')->name('predicciones');
-Route::get('/administracion', [PaginaController::class, 'administracion'])->middleware(['auth', 'isAdmin'])->name('administracion');
+Route::get('/administracion', [PaginaController::class, 'administracion'])->middleware(['guest'])->name('administracion');
+//Route::get('/administracion', [PaginaController::class, 'administracion'])->middleware(['auth', 'isAdmin'])->name('administracion');
 Route::get('/usuario', [PaginaController::class, 'usuario'])->middleware('auth')->name('usuario');
 
 // Formulario de edición de candidatura
