@@ -94,7 +94,7 @@
         .pagination-arrow {
             font-size: 18px;
             font-weight: bold;
-            color: #007bff;
+            color: #8c0c34;
             text-decoration: none;
             padding: 10px;
         }
