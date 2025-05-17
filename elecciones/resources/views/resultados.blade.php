@@ -80,7 +80,7 @@
         }
 
         .pagination .active a {
-            background-color: #8c0c34; /* Verde para la página activa */
+            background-color: #8c0c34; /* Granate para la página activa */
             color: white;
             border: 1px solid #8c0c34;
         }

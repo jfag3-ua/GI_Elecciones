@@ -4,34 +4,31 @@
 
 @section('content')
     <style>
+        /* Estilos generales de las tablas */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 30px; /* Aumentamos el margen entre las tablas */
+            font-family: 'Arial', sans-serif;
         }
         th, td {
-            border: 1px solid black;
-            padding: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #f4f4f4;
+            color: #333;
         }
         .label-column {
             text-align: left;
         }
         .divider-row {
-            border-bottom: 3px solid black;
+            border-bottom: 3px solid #000;
         }
         .text-porcentaje, .text-escano {
             color: #8c0c34;
             font-weight: bold;
-        }
-        .chart-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
         }
     </style>
 

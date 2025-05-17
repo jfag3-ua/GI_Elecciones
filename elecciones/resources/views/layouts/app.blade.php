@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="/css/custom.css">
     <style>
         /* CSS personalizado para la paginación */
+        /*
         nav a {
             padding: 10px 15px;
             border-radius: 5px;
@@ -106,11 +107,14 @@
             padding: 5px;
             font-size: 14px;
             margin-left: 10px;
-        }
+        }*/
 
     </style>
 </head>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+(function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="FV2EIXXl5h1TbZRdXNoYZ";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
+</script>
 <body>
     <header>
         <nav>
