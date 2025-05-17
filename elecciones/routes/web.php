@@ -28,7 +28,8 @@ Route::post('/guardar-voto', [CandidaturaController::class, 'guardarVoto'])->nam
 Route::get('/predicciones', [PaginaController::class, 'predicciones'])->name('predicciones');
 Route::get('/administracion', [PaginaController::class, 'administracion'])->name('administracion');
 //Route::get('/administracion', [PaginaController::class, 'administracion'])->name('administracion');
-Route::get('/usuario', [PaginaController::class, 'usuario'])->name('usuario');
+Route::get('/usuario', [PaginaController::class, 'usuario'])->middleware(\App\Http\Middleware\AuthenticatedUser::class)->name('usuario');
+
 
 // Formulario de edición de candidatura
 Route::get('/administracion/candidatura/editar/{id}', [CandidaturaController::class, 'editar'])->name('candidatura.editar');
