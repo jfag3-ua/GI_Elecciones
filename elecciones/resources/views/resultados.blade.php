@@ -150,7 +150,11 @@
         </ul>
     </div>
 
-    <h3>Información general sobre las elecciones de {{ $selectedYear }}</h3>
+    @if ($selectedYear == 'Actual')
+        <h3>Información general sobre las elecciones Actuales</h3>
+    @else
+        <h3>Información general sobre las elecciones de {{ $selectedYear }}</h3>
+    @endif
 
     @php
         $data = json_encode($winners[$selectedYear] ?? []);
@@ -217,14 +221,22 @@
                             {{ number_format($votos['En blanco'] ?? 0, 0, ',', '.') }}
                         </td>
                         <td class="text-porcentaje">
-                            {{ number_format(($votos['En blanco'] ?? 0) * 100 / ($votos['Validos'] ?? 0), 2, ',', '.') }}%
+                            @if ($selectedYear == 'Actual')
+                                0,00%
+                            @else
+                                {{ number_format(($votos['En blanco'] ?? 0) * 100 / ($votos['Validos'] ?? 0), 2, ',', '.') }}%
+                            @endif
                         </td>
                     </tr>
 
                     <tr class="odd">
                         <td rowspan="1"> Votos Nulos</td>
                         <td rowspan="1">
-                            {{ number_format($votantes[$selectedYear] - $votos['Validos'] ?? 0, 0, ',', '.') }}
+                            @if ($selectedYear == 'Actual')
+                                -
+                            @else
+                                {{ number_format($votantes[$selectedYear] - $votos['Validos'] ?? 0, 0, ',', '.') }}
+                            @endif
                         </td>
                         
                         <td class="text-numero" style="text-align: center;" colspan="3"> - </td>
@@ -234,7 +246,11 @@
         @endforeach
     @endif
 
-    <h3>Resultados de las elecciones de {{ $selectedYear }}</h3>
+    @if ($selectedYear == 'Actual')
+        <h3>Resultados de las elecciones Actuales</h3>
+    @else
+        <h3>Resultados de las elecciones de {{ $selectedYear }}</h3>
+    @endif
 
     @if (isset($winners[$selectedYear]))
         <div class="chart-container">
