@@ -4,34 +4,31 @@
 
 @section('content')
     <style>
+        /* Estilos generales de las tablas */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 20px;
+            margin-bottom: 30px; /* Aumentamos el margen entre las tablas */
+            font-family: 'Arial', sans-serif;
         }
         th, td {
-            border: 1px solid black;
-            padding: 8px;
+            border: 1px solid #ddd;
+            padding: 10px;
             text-align: left;
         }
         th {
-            background-color: #f2f2f2;
+            background-color: #f4f4f4;
+            color: #333;
         }
         .label-column {
             text-align: left;
         }
         .divider-row {
-            border-bottom: 3px solid black;
+            border-bottom: 3px solid #000;
         }
         .text-porcentaje, .text-escano {
             color: #8c0c34;
             font-weight: bold;
-        }
-        .chart-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            margin: 20px 0;
         }
     </style>
 
@@ -188,21 +185,39 @@
 
     <h3>Candidaturas</h3>
 
-    <table>
+    <table id="resultados">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Nombre</th>
+                <th>Nombre
+                    <form method="GET"
+                          action="{{ route('administracion') }}#resultados">
+                        <input type="text"
+                               name="nombre"
+                               placeholder="Buscar nombre"
+                               value="{{ request('nombre') }}">
+                        <button type="submit">Buscar</button>
+                        <button type="button"
+                                onclick="window.location.href='{{ route('administracion') }}#resultados'">
+                            Reset
+                        </button>
+                    </form>
+                </th>
+
                 <th>Escaños obtenidos</th>
                 <th>
-                    <form method="GET" action="{{ route('administracion') }}">
+                    <form method="GET"
+                          action="{{ route('administracion') }}#resultados">
                         <label for="circunscripcion">Circunscripción</label>
-                        <select name="circunscripcion" id="circunscripcion" onchange="this.form.submit()">
+                        <select name="circunscripcion"
+                                id="circunscripcion"
+                                onchange="this.form.submit()">
                             <option value="">Todas</option>
                             @foreach ($circunscripciones as $id => $nombre)
-                                <option value="{{ $id }}" {{ request('circunscripcion') == $id ? 'selected' : '' }}>
-                                    {{ $nombre }}
-                                </option>
+                            <option value="{{ $id }}"
+                                    {{ request('circunscripcion') == $id ? 'selected' : '' }}>
+                            {{ $nombre }}
+                            </option>
                             @endforeach
                         </select>
                     </form>
@@ -211,11 +226,27 @@
                 <th>Borrar</th>
             </tr>
         </thead>
+
+
         <tbody>
             @foreach ($candidaturas as $candidatura)
                 <tr>
                     <td>{{ $candidatura->idCandidatura }}</td>
-                    <td>{{ $candidatura->nombre }}</td>
+                    <td>
+                        {{ $candidatura->nombre }}
+                        <span
+                            style="
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-left: 8px;
+            border-radius: 50%;
+            background-color: {{ $candidatura->color }};
+            vertical-align: middle;
+        "
+                            title="{{ $candidatura->color }}"
+                        ></span>
+                    </td>
                     <td>{{ $candidatura->escanyosElegidos }}</td>
                     <td>{{ $circunscripciones[$candidatura->idCircunscripcion] ?? 'Desconocida' }}</td>
                     <td><a href="{{ route('candidatura.editar', $candidatura->idCandidatura) }}"><button>✏️</button></a></td>

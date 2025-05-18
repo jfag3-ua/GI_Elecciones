@@ -41,7 +41,9 @@ class Kernel extends HttpKernel
      * Middleware individuales asignables por nombre.
      */
     protected $routeMiddleware = [
-        'auth' => \App\Http\Middleware\Authenticate::class,
+        'authany' => \App\Http\Middleware\AuthenticatedUser::class,
+        
+        /*'auth' => \App\Http\Middleware\Authenticate::class,*/
         'guest' => \App\Http\Middleware\RedirectIfAuthenticated::class,
         'isAdmin' => \App\Http\Middleware\IsAdmin::class,
         /*'throttle' => \Illuminate\Routing\Middleware\ThrottleRequests::class,
