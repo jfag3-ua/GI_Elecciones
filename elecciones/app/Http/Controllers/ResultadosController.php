@@ -57,6 +57,22 @@ class ResultadosController extends Controller
         return $resultado;
     }
 
+    private function hexToRgba($hex, $alpha = 0.5) {
+        $hex = ltrim($hex, '#');
+
+        if (strlen($hex) == 3) {
+            $r = hexdec(str_repeat($hex[0], 2));
+            $g = hexdec(str_repeat($hex[1], 2));
+            $b = hexdec(str_repeat($hex[2], 2));
+        } else {
+            $r = hexdec(substr($hex, 0, 2));
+            $g = hexdec(substr($hex, 2, 2));
+            $b = hexdec(substr($hex, 4, 2));
+        }
+
+        return "rgba($r, $g, $b, $alpha)";
+    }
+
     private function getDatos()
     {
         $candidatos = [];
@@ -193,7 +209,7 @@ class ResultadosController extends Controller
                 // Si no se encuentra el color, usa uno por defecto
                 $color = $nombres[$partido] ?? '#D3D3D3';
                 $background[] = $color;
-                $hover[] = '#D3D3D3';
+                $hover[] = $this->hexToRgba($color, 0.5);
             }
         }
 
