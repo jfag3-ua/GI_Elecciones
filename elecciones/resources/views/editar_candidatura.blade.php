@@ -1,8 +1,8 @@
 @extends('layouts.app')
 
 @section('title', 'Editar candidatura')
-
 @section('content')
+
     <h2>Editar candidatura</h2>
 
     <form method="POST" action="{{ route('candidatura.actualizar', $candidatura->idCandidatura) }}">
@@ -21,7 +21,7 @@
         </div>
         <div>
             <label>Circunscripción:</label>
-            <select name="idCircunscripcion" required>
+            <select name="idCircunscripcion" required >
                 @php
                     $circunscripciones = [
                         1 => 'Alicante',
@@ -37,6 +37,21 @@
                 @endforeach
             </select>
         </div>
+        <div style="margin-bottom: 1rem;">
+            <label for="color">Color (hex):</label>
+            <input
+                type="text"
+                name="color"
+                id="color"
+                value="{{ old('color', $candidatura->color) }}"
+                placeholder="#3498db"
+                required
+                pattern="^#([A-Fa-f0-9]{6})$"
+                title="Introduce un color en formato hexadecimal, p. ej. #ff0000"
+                style="padding: .5rem; width: 150px;"
+            >
+        </div>
+
         <div>
             <button type="submit">Guardar cambios</button>
             <a href="{{ url()->previous() }}">
@@ -44,4 +59,6 @@
             </a>
         </div>
     </form>
+
 @endsection
+
