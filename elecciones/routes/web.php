@@ -21,7 +21,15 @@ Route::post('/registro', [RegistroController::class, 'register'])->name('registr
 Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->name('registro2.form');
 
 Route::get('/login', [PaginaController::class, 'inicio'])->name('login.form');
-
+Route::get('/test-db', function () {
+    try {
+        DB::connection()->getPdo();
+        $dbName = DB::connection()->getDatabaseName();
+        return "✅ Conectado a la base de datos: $dbName";
+    } catch (\Exception $e) {
+        return "❌ Error de conexión: " . $e->getMessage();
+    }
+});
 // Rutas protegidas
 Route::get('/voto', [CandidaturaController::class, 'votar'])->name('voto');
 Route::post('/guardar-voto', [CandidaturaController::class, 'guardarVoto'])->name('guardar.voto');

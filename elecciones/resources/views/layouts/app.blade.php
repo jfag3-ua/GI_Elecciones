@@ -146,6 +146,12 @@
                 <a href="{{ route('predicciones') }}" class="{{ request()->routeIs('predicciones') ? 'current' : '' }}">Predicciones</a>
                 <a href="{{ route('usuario') }}" class="{{ request()->routeIs('usuario') ? 'current' : '' }}">Usuario</a>
             @endauth
+            @if(session('tipo_usuario'))
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit">Cerrar sesión</button>
+            </form>
+            @endif
         </nav>
     </header>
     <main>
