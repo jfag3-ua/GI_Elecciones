@@ -12,6 +12,11 @@
             <label for="nombre">Nombre:</label>
             <input type="text" name="nombre" id="nombre" required>
         </div>
+        
+        <div>
+            <label for="color">Color:</label>
+            <input type="text" name="color" id="color" required>
+        </div>
 
         <div>
             <label for="idCircunscripcion">Circunscripción:</label>
