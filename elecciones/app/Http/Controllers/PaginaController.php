@@ -115,8 +115,13 @@ class PaginaController extends Controller
         }
 
         $candidaturas = $query->paginate(10, ['*'], 'candidaturas_page');
-        $candidatos = DB::table('candidato')->paginate(10, ['*'], 'candidatos_page');
+        $query2 = DB::table('candidato');
 
+        if ($request->filled('nombre_candidato')) {
+            $query2->where('nombre', 'like', '%' . $request->input('nombre_candidato') . '%');
+        }
+
+        $candidatos = $query2->paginate(10, ['*'], 'candidatos_page');
 
         return view('administracion', compact('candidaturas','candidatos'));
     }

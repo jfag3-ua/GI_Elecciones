@@ -274,11 +274,23 @@
 
     <h3>Candidatos</h3>
 
-    <table>
+    <table id="resultados_candidatos">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Nombre</th>
+                <th>Nombre
+                    <form method="GET" action="{{ route('administracion') }}#resultados_candidatos">
+                        <input type="text"
+                               name="nombre_candidato"
+                               placeholder="Buscar nombre"
+                               value="{{ request('nombre_candidato') }}">
+                        <button type="submit">Buscar</button>
+                        <button type="button"
+                                onclick="window.location.href='{{ route('administracion', ['nombre_candidato' => '', 'apellidos_candidato' => '', 'partido_id' => '', 'circunscripcion_id' => '']) }}#resultados_candidatos'">
+                            Reset
+                        </button>
+                    </form>
+                </th>
                 <th>Apellidos</th>
                 <th>Elegido</th>
                 <th>Id Candidatura</th>
@@ -312,7 +324,7 @@
     <div class="margin-top: 20px;">
         {{ $candidatos->appends(request()
         ->except('candidatos_page'))
-        ->fragment('resultados')
+        ->fragment('resultados_candidatos')
         ->links('pagination::simple-default') }}
     </div>
 @endsection
