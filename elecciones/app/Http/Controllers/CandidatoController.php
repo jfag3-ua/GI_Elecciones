@@ -255,10 +255,12 @@ class CandidatoController
             ->select(
                 'candidato.nombre as nombreCandidato',
                 'candidato.apellidos',
+                'candidato.orden',
                 'candidatura.nombre as nombrePartido',
                 'candidatura.color'
             )
             ->orderBy('nombrePartido')
+            ->orderBy('candidato.orden')
             ->get()
             ->groupBy('nombrePartido');
 
