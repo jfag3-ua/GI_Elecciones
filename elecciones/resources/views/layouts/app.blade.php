@@ -121,6 +121,7 @@
         <nav>
             {{-- Enlace siempre visible --}}
             <a href="{{ route('landing') }}" class="{{ request()->routeIs('landing') ? 'current' : '' }}">Bienvenido</a>
+            <a href="{{ route('provincias') }}" class="{{ request()->routeIs('provincias') || request()->routeIs('candidatos.porProvincia') ? 'current' : '' }}">Candidatos</a>
 
             {{-- Invitados: ni admin ni web --}}
             @guest('admin')
