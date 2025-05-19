@@ -12,7 +12,8 @@ class ResultadosController extends Controller
 {
     const HONDT_CONSTRAIN = 0.05;
 
-    private function electedParty($info_votos, $votantes_total) {
+    private function electedParty($info_votos, $votantes_total) 
+    {
         $elected = [];
 
         foreach ($info_votos as $candidato => $data) {
@@ -27,7 +28,8 @@ class ResultadosController extends Controller
         return $elected;
     }
 
-    private function asignarEscanos($votos, $escanos) {
+    private function asignarEscanos($votos, $escanos) 
+    {
         $cocientes = [];
 
         foreach ($votos as $partido => $num_votos) {
@@ -48,16 +50,18 @@ class ResultadosController extends Controller
             $resultado[$partido] = 0;
         }
 
-        for ($i = 0; $i < $escanos; $i++) {
-            $ganador = $cocientes[$i]['partido'];
-            $resultado[$ganador]++;
+        if(!empty($cocientes)){
+            for ($i = 0; $i < $escanos; $i++) {
+                $ganador = $cocientes[$i]['partido'];
+                $resultado[$ganador]++;
+            }
         }
-
 
         return $resultado;
     }
 
-    private function hexToRgba($hex, $alpha = 0.5) {
+    private function hexToRgba($hex, $alpha = 0.5) 
+    {
         $hex = ltrim($hex, '#');
 
         if (strlen($hex) == 3) {
@@ -75,46 +79,32 @@ class ResultadosController extends Controller
 
     private function getDatos()
     {
-        $candidatos = [];
-        $votos = [];
-        $escanos = [];
-
         // Datos para la Infromación General de las elecciones
         $censo = DB::table('censo')->count();        
         $votantes = DB::table('usuario')->where('votado', 1)->count();
         $abstenciones = $censo - $votantes;
 
-        // Datos de TODOS los partidos con TODOS sus votos
-        $info_elecciones = DB::table('voto_completo')
-            ->select('voto as partido', DB::raw('SUM(total_votos) as votos'))
-            ->groupBy('voto')
-            ->orderByDesc('votos')
-            ->get();
 
-        $elecciones = $info_elecciones->mapWithKeys(function ($item) {
+        // TODOS los partidos existentes
+        $nombres = DB::table('candidatura')
+            ->orderByDesc('idCircunscripcion')
+            ->pluck('color', 'nombre')
+            ->toArray();
+
+        $elecciones = collect($nombres)->mapWithKeys(function ($color, $partido){
             return [
-                $item->partido => [
-                    'Votos' => $item->votos,
-                    'Escanos' => 0
+                $partido => [
+                    'Votos' => 0,
+                    'Escanos' => 0,
+                    'Color' => $color
                 ]
             ];
         })->toArray();
 
-        // EXTRAER datos de los ESCANOS
-        $select_escanos = DB::table('circunscripcion')
-            ->select(
-                'nombre as provincia',
-                'numEscanyos as escanos'
-            )
-            ->get();
-        
-        $num_escanos = $select_escanos->mapWithKeys(function ($item) {
-            return [
-                $item->provincia => $item->escanos,    
-            ];
-        })->toArray();
+        // EXTRAER datos de los ESCANOS por Provincia
+        $num_escanos = DB::table('circunscripcion')->pluck('numEscanyos', 'nombre')->toArray();
 
-        // EXTRAER datos de los VOTANTES
+        // EXTRAER datos de los VOTANTES por Provincia
         $info_votantes = DB::table('voto_completo')
             ->select('nomProvincia as provincia', DB::raw('SUM(total_votos) as votantes'))
             ->groupBy('nomProvincia')
@@ -127,7 +117,7 @@ class ResultadosController extends Controller
             ];
         })->toArray();
 
-        // EXTRAER datos de los PARTIDOS VOTADOS
+        // EXTRAER datos de los PARTIDOS VOTADOS por Provincia
         $info_provincias = DB::table('voto_completo')
             ->select(
                 'voto as partido',
@@ -152,44 +142,44 @@ class ResultadosController extends Controller
             ];
         }
         
-        // EXTRAER datos de los partidos votados en ALICANTE
+        // EXTRAER datos de los ESCAÑOS en ALICANTE
         // Este proceso solo devuelve los partidos electos que han conseguido escaños, junto al valor de los mismos
         $elected = $this->electedParty($provincia_votos['Alicante'], $votantes_provincia['Alicante']);
         $alicante = $this->asignarEscanos($elected, $num_escanos['Alicante']);
 
-        // EXTRAER datos de los partidos votados en VALENCIA
+        // EXTRAER datos de los ESCAÑOS en VALENCIA
         // Este proceso solo devuelve los partidos electos que han conseguido escaños, junto al valor de los mismos
         $elected = $this->electedParty($provincia_votos['Valencia'], $votantes_provincia['Valencia']);
         $valencia = $this->asignarEscanos($elected, $num_escanos['Valencia']);
 
-        // EXTRAER datos de los partidos votados en CASTELLON
+        // EXTRAER datos de los ESCAÑOS en CASTELLON
         // Este proceso solo devuelve los partidos electos que han conseguido escaños, junto al valor de los mismos
         $elected = $this->electedParty($provincia_votos['Castellón'], $votantes_provincia['Castellón']);
         $castellon = $this->asignarEscanos($elected, $num_escanos['Castellón']);
 
-        // SUMA de escaños con el total de partidos y sus respectivos votos
+        // SUMA de ESCAÑOS y VOTOS para el total de partidos
         foreach ($elecciones as $partido => $dato) {
             $escanos = 0;
             $escanos += $alicante[$partido] ?? 0;
             $escanos += $valencia[$partido] ?? 0;
             $escanos += $castellon[$partido] ?? 0;
 
+            $votaciones = 0;
+            $votaciones += $provincia_votos['Alicante'][$partido]['Votos'] ?? 0;
+            $votaciones += $provincia_votos['Valencia'][$partido]['Votos'] ?? 0;
+            $votaciones += $provincia_votos['Castellón'][$partido]['Votos'] ?? 0;
+
             $elecciones[$partido] = [
-                'Votos' => $dato['Votos'],
-                'Escanos' => $escanos
+                'Votos' => $votaciones,
+                'Escanos' => $escanos,
+                'Color' => $dato['Color'] ?? '#D3D3D3'
             ];
         }
 
+        // Ordenar partidos de Mayor votado a menor
+        uasort($elecciones, fn($a, $b) => $b['Votos'] <=> $a['Votos']);
+
         // COMPROVACION de si hay partidos sin votos para unirlos al resultado
-        $nombres = DB::table('candidatura')->groupBy('nombre', 'color')->pluck('color', 'nombre')->toArray();
-        foreach ($nombres as $partido => $color) {
-            if (!array_key_exists($partido, $elecciones)) {
-                $elecciones[$partido] = [
-                    'Votos' => 0,
-                    'Escanos' => 0
-                ];
-            }
-        }
         
         // Datos para los RESULTADOS DE LAS ELECCIONES
         $candidatos = array_keys($elecciones);
@@ -200,18 +190,26 @@ class ResultadosController extends Controller
         $escanos_partidos = [];
         $background = [];
         $hover = [];
-        foreach ($elecciones as $partido => $lista_valor)  {
-            $esc = $lista_valor['Escanos'];
+        foreach ($elecciones as $partido => $dato)  {
+            $esc = $dato['Escanos'];
 
             if ($esc > 0) {
                 $escanos_partidos[$partido] = $esc;
 
                 // Si no se encuentra el color, usa uno por defecto
-                $color = $nombres[$partido] ?? '#D3D3D3';
+                $color = $dato['Color'];
                 $background[] = $color;
                 $hover[] = $this->hexToRgba($color, 0.5);
             }
         }
+
+        $resultado = [
+            'Total Escanos' => $escanos_partidos,
+
+            'Alicante' => $alicante,
+            'Valencia' => $valencia,
+            'Castellón' => $castellon
+        ];
 
         // Array de datos a consumir
         return [
@@ -245,8 +243,24 @@ class ResultadosController extends Controller
                         'hoverBackgroundColor' => array_values($hover)
                     ]]
                 ]
-            ]
+            ],
+
+            'Resultado' => $resultado
         ];
+    }
+
+    public function getEscanos(Request $request)
+    {
+        # CONTENIDO: 
+        # Total Escanos
+        # Alicante
+        # Valencia
+        # Castellón
+        
+        $datos = $this->getDatos();
+        $elecciones = $datos['Resultado'];
+
+        return $elecciones;
     }
 
     public function index(Request $request, $year = null)  
