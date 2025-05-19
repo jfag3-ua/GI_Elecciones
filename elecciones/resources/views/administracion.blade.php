@@ -264,9 +264,13 @@
     <a href="{{ route('candidatura.crear') }}">
         <button>Añadir candidatura</button>
     </a>
-    <div class="margin-top: 20px;">
-        {{ $candidaturas->appends(request()->except('candidaturas_page'))->links('pagination::simple-default') }}
-    </div>
+<div id="resultados" style="margin-top: 20px;">
+    {{ $candidaturas
+    ->appends(request()->except('candidaturas_page'))
+    ->fragment('resultados')
+    ->links('pagination::simple-default')
+    }}
+</div>
 
     <h3>Candidatos</h3>
 
@@ -306,6 +310,9 @@
         <button>Añadir candidato</button>
     </a>
     <div class="margin-top: 20px;">
-        {{ $candidatos->appends(request()->except('candidatos_page'))->links('pagination::simple-default') }}
+        {{ $candidatos->appends(request()
+        ->except('candidatos_page'))
+        ->fragment('resultados')
+        ->links('pagination::simple-default') }}
     </div>
 @endsection
