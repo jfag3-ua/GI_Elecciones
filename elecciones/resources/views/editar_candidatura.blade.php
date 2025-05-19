@@ -16,6 +16,10 @@
             <input type="text" name="nombre" value="{{ $candidatura->nombre }}" required>
         </div>
         <div>
+            <label>Color:</label>
+            <input type="text" name="color" value="{{ $candidatura->color }}" required>
+        </div>
+        <div>
             <label>Escaños obtenidos:</label>
             <input type="text" value="{{ $candidatura->escanyosElegidos }}" disabled>
         </div>
