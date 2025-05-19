@@ -79,7 +79,7 @@ class CandidaturaController extends Controller
 
         // Obtener el id de la localización
         $localizacion_id = $localizacion->id;
-        
+
         // Crear el voto
         $voto = new Voto();
         $voto->voto = $request->input('candidato');  // Guardamos el nombre del candidato en el campo 'voto'
@@ -113,6 +113,7 @@ class CandidaturaController extends Controller
             'nombre' => 'required|string|max:255',
             'color' => 'required|string|max:255',
             'idCircunscripcion' => 'required|in:1,2,3',
+            'color'  => ['required', 'regex:/^#[A-Fa-f0-9]{6}$/'],
         ]);
 
         DB::table('candidatura')
@@ -121,6 +122,7 @@ class CandidaturaController extends Controller
                 'nombre' => $validated['nombre'],
                 'color' => $validated['color'],
                 'idCircunscripcion' => $validated['idCircunscripcion'],
+                'color' => $validated['color']
             ]);
 
         return redirect()->route('administracion')->with('successActualizar', 'La candidatura ha sido actualizada correctamente');
@@ -154,4 +156,6 @@ class CandidaturaController extends Controller
         Candidatura::destroy($id); // o Candidatura::find($id)->delete();
         return redirect()->route('administracion')->with('successEliminar', 'La candidatura ha sido eliminada correctamente');
     }
+
+
 }
