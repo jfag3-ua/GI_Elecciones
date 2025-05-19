@@ -74,18 +74,23 @@ class CandidatoController
     {
         $candidatosPorPartido = DB::table('candidato')
             ->join('candidatura', 'candidato.idCandidatura', '=', 'candidatura.idCandidatura')
-            ->join('localizacion', 'candidatura.idCircunscripcion', '=', 'localizacion.id')
+            ->join('circunscripcion', 'candidatura.idCircunscripcion', '=', 'circunscripcion.idCircunscripcion')
+            ->join('localizacion', 'localizacion.provincia', '=', 'circunscripcion.idCircunscripcion')
             ->where('localizacion.provincia', $provincia)
             ->select(
                 'candidato.nombre as nombreCandidato',
                 'candidato.apellidos',
+                'candidato.orden',
                 'candidatura.nombre as nombrePartido',
                 'candidatura.color'
             )
             ->orderBy('nombrePartido')
+            ->orderBy('candidato.orden')
             ->get()
             ->groupBy('nombrePartido');
 
         return view('candidatos_por_provincia', compact('candidatosPorPartido', 'provincia'));
     }
+
+
 }
