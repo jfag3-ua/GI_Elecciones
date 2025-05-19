@@ -37,11 +37,14 @@ Route::middleware([\App\Http\Middleware\IsUser::class])->group(function () {
     Route::get('/voto', [CandidaturaController::class, 'votar'])->name('voto');
     Route::post('/guardar-voto', [CandidaturaController::class, 'guardarVoto'])->name('guardar.voto');
     Route::get('/predicciones', [PaginaController::class, 'predicciones'])->name('predicciones');
-    Route::get('/usuario', [PaginaController::class, 'usuario'])->name('usuario');
 });
 
+Route::get('/usuario', [PaginaController::class, 'usuario'])
+    ->middleware(\App\Http\Middleware\IsAuthenticated::class)
+    ->name('usuario');
+
+
 Route::middleware([\App\Http\Middleware\IsAdmin::class])->group(function () {
-    Route::get('/usuario', [PaginaController::class, 'usuario'])->name('usuario');
     Route::get('/administracion', [PaginaController::class, 'administracion'])->name('administracion');
 
     // Candidaturas

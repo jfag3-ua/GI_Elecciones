@@ -41,7 +41,8 @@ class Kernel extends HttpKernel
      * Middleware individuales asignables por nombre.
      */
     protected $routeMiddleware = [
-        'is_admin' => \App\Http\Middleware\AuthenticatedUser::class,
+        'is_authenticated' => \App\Http\Middleware\IsAuthenticated::class,
+        'is_admin' => \App\Http\Middleware\IsAdmin::class,
         'is_user' => \App\Http\Middleware\IsUser::class,
         'guest_only' => \App\Http\Middleware\RedirectIfAuthenticatedCustom::class,
         /*'auth' => \App\Http\Middleware\Authenticate::class,
