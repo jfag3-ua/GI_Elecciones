@@ -242,8 +242,10 @@
                 <th>Id</th>
                 <th>Nombre</th>
                 <th>Apellidos</th>
+                <th>NIF</th>              
+                <th>Orden</th>             
                 <th>Elegido</th>
-                <th>Id Candidatura</th>
+                <th>Provincia</th>
                 <th>Editar</th>
                 <th>Borrar</th>
             </tr>
@@ -254,9 +256,15 @@
                     <td>{{ $candidato->idCandidato }}</td>
                     <td>{{ $candidato->nombre }}</td>
                     <td>{{ $candidato->apellidos }}</td>
+                    <td>{{ $candidato->nif }}</td>       
+                    <td>{{ $candidato->orden }}</td>        
                     <td>{{ $candidato->elegido ? 'Sí' : 'No' }}</td>
-                    <td>{{ $candidato->idCandidatura }}</td>
-                    <td><a href="{{ route('candidato.editar', $candidato->idCandidato) }}"><button>✏️</button></a></td>
+                    <td>{{ $candidato->provincia }}</td>
+                    <td>
+                        <a href="{{ route('candidato.editar', $candidato->idCandidato) }}">
+                            <button>✏️</button>
+                        </a>
+                    </td>
                     <td>
                         <form id="form-borrar-{{ $candidato->idCandidato }}" action="{{ route('candidato.borrar', $candidato->idCandidato) }}" method="POST">
                             @csrf
@@ -268,10 +276,12 @@
             @endforeach
         </tbody>
     </table>
+
     <a href="{{ route('candidato.crear') }}">
         <button>Añadir candidato</button>
     </a>
-    <div class="margin-top: 20px;">
+
+    <div style="margin-top: 20px;">
         {{ $candidatos->appends(request()->except('candidatos_page'))->links('pagination::simple-default') }}
     </div>
-@endsection
+    @endsection
