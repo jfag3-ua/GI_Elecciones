@@ -292,10 +292,24 @@
                     </form>
                 </th>
                 <th>Apellidos</th>
-                <th>NIF</th>              
-                <th>Orden</th>             
+                <th>NIF</th>
+                <th>Orden</th>
                 <th>Elegido</th>
-                <th>Provincia</th>
+                <th><form method="GET"
+                          action="{{ route('administracion') }}#resultados_candidatos">
+                        <label for="circunscripcion">Circunscripción</label>
+                        <select name="circunscripcion_candidatos"
+                                id="circunscripcion_candidatos"
+                                onchange="this.form.submit()">
+                            <option value="">Todas</option>
+                            @foreach ($circunscripciones as $id => $nombre)
+                            <option value="{{ $id }}"
+                                    {{ request('circunscripcion_candidatos') == $id ? 'selected' : '' }}>
+                            {{ $nombre }}
+                            </option>
+                            @endforeach
+                        </select>
+                    </form></th>
                 <th>Editar</th>
                 <th>Borrar</th>
             </tr>
@@ -306,8 +320,8 @@
                     <td>{{ $candidato->idCandidato }}</td>
                     <td>{{ $candidato->nombre }}</td>
                     <td>{{ $candidato->apellidos }}</td>
-                    <td>{{ $candidato->nif }}</td>       
-                    <td>{{ $candidato->orden }}</td>        
+                    <td>{{ $candidato->nif }}</td>
+                    <td>{{ $candidato->orden }}</td>
                     <td>{{ $candidato->elegido ? 'Sí' : 'No' }}</td>
                     <td>{{ $candidato->provincia }}</td>
                     <td>
