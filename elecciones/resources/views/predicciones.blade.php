@@ -61,7 +61,7 @@
             const lastIndex = dataArray.length - 1;
             const real = Array.from(dataArray);
             const pred = new Array(dataArray.length).fill(null);
-            
+
             // Keep only real data up to penultimate point
             real[lastIndex] = null;
 
@@ -137,7 +137,7 @@
                                 const datasetLabel = item.dataset.label;
                                 const isPred = datasetLabel.includes('Predicción');
                                 const isPenultimate = yearIndex === (labels.length - 2);
-                                
+
                                 return !(isPred && isPenultimate);
                             }
                         }
