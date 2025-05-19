@@ -13,7 +13,7 @@ class IsUser
             return $next($request);
         }
 
-        return redirect()->route('login')->with('error', 'Acceso denegado.');
+        return redirect()->route('login')->withErrors('error', 'Acceso denegado.');
     }
 }
 
