@@ -185,21 +185,39 @@
 
     <h3>Candidaturas</h3>
 
-    <table>
+    <table id="resultados">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Nombre</th>
+                <th>Nombre
+                    <form method="GET"
+                          action="{{ route('administracion') }}#resultados">
+                        <input type="text"
+                               name="nombre"
+                               placeholder="Buscar nombre"
+                               value="{{ request('nombre') }}">
+                        <button type="submit">Buscar</button>
+                        <button type="button"
+                                onclick="window.location.href='{{ route('administracion') }}#resultados'">
+                            Reset
+                        </button>
+                    </form>
+                </th>
+
                 <th>Escaños obtenidos</th>
                 <th>
-                    <form method="GET" action="{{ route('administracion') }}">
+                    <form method="GET"
+                          action="{{ route('administracion') }}#resultados">
                         <label for="circunscripcion">Circunscripción</label>
-                        <select name="circunscripcion" id="circunscripcion" onchange="this.form.submit()">
+                        <select name="circunscripcion"
+                                id="circunscripcion"
+                                onchange="this.form.submit()">
                             <option value="">Todas</option>
                             @foreach ($circunscripciones as $id => $nombre)
-                                <option value="{{ $id }}" {{ request('circunscripcion') == $id ? 'selected' : '' }}>
-                                    {{ $nombre }}
-                                </option>
+                            <option value="{{ $id }}"
+                                    {{ request('circunscripcion') == $id ? 'selected' : '' }}>
+                            {{ $nombre }}
+                            </option>
                             @endforeach
                         </select>
                     </form>
@@ -208,11 +226,27 @@
                 <th>Borrar</th>
             </tr>
         </thead>
+
+
         <tbody>
             @foreach ($candidaturas as $candidatura)
                 <tr>
                     <td>{{ $candidatura->idCandidatura }}</td>
-                    <td>{{ $candidatura->nombre }}</td>
+                    <td>
+                        {{ $candidatura->nombre }}
+                        <span
+                            style="
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            margin-left: 8px;
+            border-radius: 50%;
+            background-color: {{ $candidatura->color }};
+            vertical-align: middle;
+        "
+                            title="{{ $candidatura->color }}"
+                        ></span>
+                    </td>
                     <td>{{ $candidatura->escanyosElegidos }}</td>
                     <td>{{ $circunscripciones[$candidatura->idCircunscripcion] ?? 'Desconocida' }}</td>
                     <td><a href="{{ route('candidatura.editar', $candidatura->idCandidatura) }}"><button>✏️</button></a></td>
@@ -230,17 +264,33 @@
     <a href="{{ route('candidatura.crear') }}">
         <button>Añadir candidatura</button>
     </a>
-    <div class="margin-top: 20px;">
-        {{ $candidaturas->appends(request()->except('candidaturas_page'))->links('pagination::simple-default') }}
-    </div>
+<div id="resultados" style="margin-top: 20px;">
+    {{ $candidaturas
+    ->appends(request()->except('candidaturas_page'))
+    ->fragment('resultados')
+    ->links('pagination::simple-default')
+    }}
+</div>
 
     <h3>Candidatos</h3>
 
-    <table>
+    <table id="resultados_candidatos">
         <thead>
             <tr>
                 <th>Id</th>
-                <th>Nombre</th>
+                <th>Nombre
+                    <form method="GET" action="{{ route('administracion') }}#resultados_candidatos">
+                        <input type="text"
+                               name="nombre_candidato"
+                               placeholder="Buscar nombre"
+                               value="{{ request('nombre_candidato') }}">
+                        <button type="submit">Buscar</button>
+                        <button type="button"
+                                onclick="window.location.href='{{ route('administracion', ['nombre_candidato' => '', 'apellidos_candidato' => '', 'partido_id' => '', 'circunscripcion_id' => '']) }}#resultados_candidatos'">
+                            Reset
+                        </button>
+                    </form>
+                </th>
                 <th>Apellidos</th>
                 <th>NIF</th>              
                 <th>Orden</th>             
@@ -280,8 +330,10 @@
     <a href="{{ route('candidato.crear') }}">
         <button>Añadir candidato</button>
     </a>
-
-    <div style="margin-top: 20px;">
-        {{ $candidatos->appends(request()->except('candidatos_page'))->links('pagination::simple-default') }}
+    <div class="margin-top: 20px;">
+        {{ $candidatos->appends(request()
+        ->except('candidatos_page'))
+        ->fragment('resultados_candidatos')
+        ->links('pagination::simple-default') }}
     </div>
     @endsection

@@ -115,11 +115,13 @@
 <script>
 (function(){if(!window.chatbase||window.chatbase("getState")!=="initialized"){window.chatbase=(...arguments)=>{if(!window.chatbase.q){window.chatbase.q=[]}window.chatbase.q.push(arguments)};window.chatbase=new Proxy(window.chatbase,{get(target,prop){if(prop==="q"){return target.q}return(...args)=>target(prop,...args)}})}const onLoad=function(){const script=document.createElement("script");script.src="https://www.chatbase.co/embed.min.js";script.id="FV2EIXXl5h1TbZRdXNoYZ";script.domain="www.chatbase.co";document.body.appendChild(script)};if(document.readyState==="complete"){onLoad()}else{window.addEventListener("load",onLoad)}})();
 </script>
+@yield('scripts')
 <body>
     <header>
         <nav>
             {{-- Enlace siempre visible --}}
             <a href="{{ route('landing') }}" class="{{ request()->routeIs('landing') ? 'current' : '' }}">Bienvenido</a>
+            <a href="{{ route('provincias') }}" class="{{ request()->routeIs('provincias') || request()->routeIs('candidatos.porProvincia') ? 'current' : '' }}">Candidatos</a>
 
             {{-- Invitados: ni admin ni web --}}
             @guest('admin')
@@ -146,6 +148,12 @@
                 <a href="{{ route('predicciones') }}" class="{{ request()->routeIs('predicciones') ? 'current' : '' }}">Predicciones</a>
                 <a href="{{ route('usuario') }}" class="{{ request()->routeIs('usuario') ? 'current' : '' }}">Usuario</a>
             @endauth
+            @if(Auth::guard('admin')->check() || Auth::check())
+            <form action="{{ route('logout') }}" method="POST" style="display: inline;">
+                @csrf
+                <button type="submit">Cerrar sesión</button>
+            </form>
+            @endif
         </nav>
     </header>
     <main>
