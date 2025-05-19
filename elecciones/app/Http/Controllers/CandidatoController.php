@@ -64,4 +64,28 @@ class CandidatoController
 
         return redirect()->route('administracion')->with('successEliminarCandidato', 'El candidato ha sido eliminado correctamente');
     }
+    
+    public function mostrarProvincias()
+    {
+        $provincias = DB::table('localizacion')->select('provincia', 'nomProvincia')->distinct()->get();
+        return view('provincias', compact('provincias'));
+    }
+    public function candidatosPorProvincia($provincia)
+    {
+        $candidatosPorPartido = DB::table('candidato')
+            ->join('candidatura', 'candidato.idCandidatura', '=', 'candidatura.idCandidatura')
+            ->join('localizacion', 'candidatura.idCircunscripcion', '=', 'localizacion.id')
+            ->where('localizacion.provincia', $provincia)
+            ->select(
+                'candidato.nombre as nombreCandidato',
+                'candidato.apellidos',
+                'candidatura.nombre as nombrePartido',
+                'candidatura.color'
+            )
+            ->orderBy('nombrePartido')
+            ->get()
+            ->groupBy('nombrePartido');
+
+        return view('candidatos_por_provincia', compact('candidatosPorPartido', 'provincia'));
+    }
 }

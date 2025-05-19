@@ -20,6 +20,9 @@ Route::get('/registro', [PaginaController::class, 'registro'])->name('registro')
 Route::post('/registro', [RegistroController::class, 'register'])->name('registro2');
 Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->name('registro2.form');
 
+Route::get('/provincias', [CandidatoController::class, 'mostrarProvincias'])->name('provincias');
+Route::get('/provincias/{provincia}/candidatos', [CandidatoController::class, 'candidatosPorProvincia'])->name('candidatos.porProvincia');
+
 Route::get('/login', [PaginaController::class, 'inicio'])->name('login.form');
 Route::get('/test-db', function () {
     try {
@@ -32,11 +35,11 @@ Route::get('/test-db', function () {
 });
 
 Route::get('/inicio', [PaginaController::class, 'inicio'])->/*middleware('RedirectIfAuthenticatedCustom')->*/name('inicio');
+Route::get('/predicciones', [PaginaController::class, 'predicciones'])->name('predicciones');
 
 Route::middleware([\App\Http\Middleware\IsUser::class])->group(function () {
     Route::get('/voto', [CandidaturaController::class, 'votar'])->name('voto');
     Route::post('/guardar-voto', [CandidaturaController::class, 'guardarVoto'])->name('guardar.voto');
-    Route::get('/predicciones', [PaginaController::class, 'predicciones'])->name('predicciones');
 });
 
 Route::get('/usuario', [PaginaController::class, 'usuario'])
