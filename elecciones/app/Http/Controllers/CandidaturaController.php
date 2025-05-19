@@ -111,6 +111,7 @@ class CandidaturaController extends Controller
     {
         $validated = $request->validate([
             'nombre' => 'required|string|max:255',
+            'color' => 'required|string|max:255',
             'idCircunscripcion' => 'required|in:1,2,3',
             'color'  => ['required', 'regex:/^#[A-Fa-f0-9]{6}$/'],
         ]);
@@ -119,6 +120,7 @@ class CandidaturaController extends Controller
             ->where('idCandidatura', $id)
             ->update([
                 'nombre' => $validated['nombre'],
+                'color' => $validated['color'],
                 'idCircunscripcion' => $validated['idCircunscripcion'],
                 'color' => $validated['color']
             ]);
@@ -135,11 +137,13 @@ class CandidaturaController extends Controller
     {
         $request->validate([
             'nombre' => 'required|string|max:255',
+            'color' => 'required|string|max:255',
             'idCircunscripcion' => 'required|integer'
         ]);
 
         Candidatura::create([
             'nombre' => $request->nombre,
+            'color' => $request->color,
             'idCircunscripcion' => $request->idCircunscripcion,
             'escanyosElegidos' => 0
         ]);

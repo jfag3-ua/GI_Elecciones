@@ -114,8 +114,29 @@ class PaginaController extends Controller
             $query->where('nombre', 'like', '%' . $request->nombre . '%');
         }
 
+
         $candidaturas = $query->paginate(10, ['*'], 'candidaturas_page');
-        $candidatos = DB::table('candidato')->paginate(10, ['*'], 'candidatos_page');
+        $query = DB::table('candidato as can')
+            ->join('candidatura as c', 'can.idCandidatura', '=', 'c.idCandidatura')
+            ->join('circunscripcion as ci', 'c.idCircunscripcion', '=', 'ci.idCircunscripcion')
+            ->select([
+                'can.idCandidato',
+                'can.nombre',
+                'can.apellidos',
+                'can.nif',
+                'can.orden',
+                'can.elegido',
+                'can.idCandidatura',
+                'c.nombre as nombreCandidatura',
+                'ci.nombre as provincia',
+                'ci.idCircunscripcion' // Asegúrate de seleccionar el id de la circunscripción para el filtro
+            ]);
+
+        if ($request->filled('circunscripcion_candidatos')) {
+            $query->where('ci.idCircunscripcion', $request->input('circunscripcion_candidatos'));
+        }
+
+        $candidatos = $query->paginate(10, ['*'], 'candidatos_page');
 
 
         return view('administracion', compact('candidaturas','candidatos'));
