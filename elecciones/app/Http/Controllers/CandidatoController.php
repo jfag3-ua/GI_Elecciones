@@ -250,8 +250,7 @@ class CandidatoController
     {
         $candidatosPorPartido = DB::table('candidato')
             ->join('candidatura', 'candidato.idCandidatura', '=', 'candidatura.idCandidatura')
-            ->join('circunscripcion', 'candidatura.idCircunscripcion', '=', 'circunscripcion.idCircunscripcion')
-            ->join('localizacion', 'localizacion.provincia', '=', 'circunscripcion.idCircunscripcion')
+            ->join('localizacion', 'candidatura.idCircunscripcion', '=', 'localizacion.id')
             ->where('localizacion.provincia', $provincia)
             ->select(
                 'candidato.nombre as nombreCandidato',
@@ -267,6 +266,4 @@ class CandidatoController
 
         return view('candidatos_por_provincia', compact('candidatosPorPartido', 'provincia'));
     }
-
-
 }
