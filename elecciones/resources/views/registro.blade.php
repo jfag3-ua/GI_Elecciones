@@ -17,6 +17,13 @@
             @enderror
         </div>
         <div>
+            <label for="clave">Clave de registro</label>
+            <input type="text" name="clave" id="clave" required>
+            @error('clave')
+                <div style="color: red;">{{ $message }}</div>
+            @enderror
+        </div>
+        <div>
             <label for="nombreUsuario">Nombre de usuario</label>
             <input type="text" name="nombreUsuario" id="nombreUsuario"  required>
             @error('nombreUsuario')
