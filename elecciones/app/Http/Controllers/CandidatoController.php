@@ -266,4 +266,5 @@ class CandidatoController
 
         return view('candidatos_por_provincia', compact('candidatosPorPartido', 'provincia'));
     }
+
 }
