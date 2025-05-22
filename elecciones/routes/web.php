@@ -7,6 +7,7 @@ use App\Http\Controllers\RegistroController;
 use App\Http\Controllers\CandidaturaController;
 use App\Http\Controllers\CandidatoController;
 use App\Http\Controllers\ResultadosController;
+use App\Http\Controllers\EleccionController;
 
 Route::get('/resultados/{year?}', [ResultadosController::class, 'index'])->name('resultados');
 
@@ -22,6 +23,12 @@ Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->name('
 
 Route::get('/provincias', [CandidatoController::class, 'mostrarProvincias'])->name('provincias');
 Route::get('/provincias/{provincia}/candidatos', [CandidatoController::class, 'candidatosPorProvincia'])->name('candidatos.porProvincia');
+
+
+Route::get('/calendario', [EleccionController::class, 'mostrarCalendario']);
+Route::resource('elecciones', EleccionController::class);
+Route::get('/api/elecciones', [EleccionController::class, 'getEleccionesForDropdown'])->name('api.elecciones');
+Route::get('/api/elecciones/{eleccion}/fechas', [EleccionController::class, 'getFechasEleccion'])->name('api.elecciones.fechas');
 
 Route::get('/login', [PaginaController::class, 'inicio'])->name('login.form');
 Route::get('/test-db', function () {
