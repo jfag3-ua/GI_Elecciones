@@ -246,25 +246,35 @@ class CandidatoController
         $provincias = DB::table('localizacion')->select('provincia', 'nomProvincia')->distinct()->get();
         return view('provincias', compact('provincias'));
     }
-    public function candidatosPorProvincia($provincia)
+
+    public function candidatosPorProvincia($provinciaId)
     {
-        $candidatosPorPartido = DB::table('candidato')
-            ->join('candidatura', 'candidato.idCandidatura', '=', 'candidatura.idCandidatura')
-            ->join('localizacion', 'candidatura.idCircunscripcion', '=', 'localizacion.id')
-            ->where('localizacion.provincia', $provincia)
+        $nombreProvincia = DB::table('localizacion')
+            ->where('provincia', $provinciaId)
+            ->value('nomProvincia');
+
+        $locSub = DB::table('localizacion')
+            ->select('provincia', DB::raw('MIN(nomProvincia) as nomProvincia'))
+            ->groupBy('provincia');
+
+        $candidatosPorPartido = DB::table('candidato as c')
+            ->join('candidatura as cand', 'c.idCandidatura', '=', 'cand.idCandidatura')
+            ->join('circunscripcion as circ', 'cand.idCircunscripcion', '=', 'circ.idCircunscripcion')
+            ->joinSub($locSub, 'loc', function ($join) {
+                $join->on('circ.idCircunscripcion', '=', 'loc.provincia');
+            })
+            ->where('loc.provincia', $provinciaId)
             ->select(
-                'candidato.nombre as nombreCandidato',
-                'candidato.apellidos',
-                'candidato.orden',
-                'candidatura.nombre as nombrePartido',
-                'candidatura.color'
+                'c.nombre as nombreCandidato',
+                'c.apellidos',
+                'c.orden',
+                'cand.nombre as nombrePartido',
+                'cand.color'
             )
             ->orderBy('nombrePartido')
-            ->orderBy('candidato.orden')
+            ->orderBy('c.orden')
             ->get()
             ->groupBy('nombrePartido');
-
-        return view('candidatos_por_provincia', compact('candidatosPorPartido', 'provincia'));
+            return view('candidatos_por_provincia', compact('candidatosPorPartido', 'provinciaId', 'nombreProvincia'));
     }
-
 }
