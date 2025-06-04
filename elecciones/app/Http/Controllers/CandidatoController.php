@@ -271,7 +271,7 @@ class CandidatoController
                 'cand.nombre as nombrePartido',
                 'cand.color'
             )
-            ->orderBy('nombrePartido')
+            ->orderBy('cand.idCandidatura')
             ->orderBy('c.orden')
             ->get()
             ->groupBy('nombrePartido');
