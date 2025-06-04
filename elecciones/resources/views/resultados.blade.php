@@ -64,15 +64,15 @@
         }
 
         .pagination a {
-        text-decoration: none;
-        color: #8c0c34; /* texto granate */
-        padding: 5px 7px;
-        border-radius: 5px;
-        background-color: white; /* fondo blanco */
-        border: 1px solid #8c0c34;
-        transition: background-color 0.3s ease, color 0.3s ease;
-        font-size: 14px;
-    }
+            text-decoration: none;
+            color: #8c0c34; /* texto granate */
+            padding: 5px 7px;
+            border-radius: 5px;
+            background-color: white; /* fondo blanco */
+            border: 1px solid #8c0c34;
+            transition: background-color 0.3s ease, color 0.3s ease;
+            font-size: 14px;
+        }
 
         .pagination a:hover {
             background-color: #8c0c34;
@@ -151,9 +151,66 @@
     </div>
 
     @if ($selectedYear == 'Actual')
-        <h3>Información general sobre las elecciones Actuales</h3>
+        <h3>Datos Electorales - Elecciones Actuales</h3>
     @else
-        <h3>Información general sobre las elecciones de {{ $selectedYear }}</h3>
+        <h3>Datos Electorales - Elecciones en {{ $selectedYear }}</h3>
+    @endif
+
+    @if (isset($winners[$selectedYear]))
+        <div class="chart-container">
+            <canvas id="chart-{{ $selectedYear }}"></canvas>
+        </div>
+
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                const ctx = document.getElementById('chart-{{ $selectedYear }}').getContext('2d');
+                const readData = {!! json_encode($winners[$selectedYear] ?? []) !!};
+
+                const data = {
+                    labels: readData.labels,
+                    datasets: readData.datasets
+                };
+
+                const options = {
+                    responsive: true,
+                    cutout: "60%", 
+                    rotation: -90, 
+                    circumference: 180,
+                    plugins: {
+                        legend: {
+                            position: "top",
+                            labels: {
+                                usePointStyle: true
+                            }
+                        },
+
+                        title:{
+                            display: true,   
+                            text: "99",
+                            color: "#000",
+                            font: {
+                                size: 30,
+                                weight: "bold"
+                            },
+                            position: "bottom"
+                        }
+                    }
+                };
+
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data,
+                    options: options
+                });
+
+            });
+        </script>
+    @endif
+
+    @if ($selectedYear == 'Actual')
+        <h3>Información general de las elecciones Actuales</h3>
+    @else
+        <h3>Información general de las elecciones de {{ $selectedYear }}</h3>
     @endif
 
     @php
@@ -250,57 +307,6 @@
         <h3>Resultados de las elecciones Actuales</h3>
     @else
         <h3>Resultados de las elecciones de {{ $selectedYear }}</h3>
-    @endif
-
-    @if (isset($winners[$selectedYear]))
-        <div class="chart-container">
-            <canvas id="chart-{{ $selectedYear }}"></canvas>
-        </div>
-
-        <script>
-            document.addEventListener("DOMContentLoaded", function() {
-                const ctx = document.getElementById('chart-{{ $selectedYear }}').getContext('2d');
-                const readData = {!! json_encode($winners[$selectedYear] ?? []) !!};
-
-                const data = {
-                    labels: readData.labels,
-                    datasets: readData.datasets
-                };
-
-                const options = {
-                    responsive: true,
-                    cutout: "60%", 
-                    rotation: -90, 
-                    circumference: 180,
-                    plugins: {
-                        legend: {
-                            position: "top",
-                            labels: {
-                                usePointStyle: true
-                            }
-                        },
-
-                        title:{
-                            display: true,   
-                            text: "99",
-                            color: "#000",
-                            font: {
-                                size: 30,
-                                weight: "bold"
-                            },
-                            position: "bottom"
-                        }
-                    }
-                };
-
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: data,
-                    options: options
-                });
-
-            });
-        </script>
     @endif
 
     @if (isset($info_votos[$selectedYear]))
