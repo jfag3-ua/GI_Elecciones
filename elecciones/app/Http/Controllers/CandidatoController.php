@@ -121,21 +121,26 @@ class CandidatoController
     }
 
     /* ---------- FORMULARIO DE ALTA ---------- */
-    public function crear()
+    public function crear($id)
     {
+        // Obtener las candidaturas filtradas por la eleccion_id
         $candidaturas = DB::table('candidatura as c')
             ->leftJoin('circunscripcion as ci', 'ci.idCircunscripcion', '=', 'c.idCircunscripcion')
             ->select([
                 'c.idCandidatura',
                 DB::raw("CONCAT(c.nombre, ' ', ci.nombre) AS nombre_concat")
             ])
+            ->where('c.eleccion_id', $id) // ✅ ¡Añadimos esta línea para filtrar!
             ->orderBy('nombre_concat')
             ->get();
 
-        return view('crear_candidato', compact('candidaturas'));
+        return view('crear_candidato', [
+            'candidaturas' => $candidaturas,
+            'eleccion_id' => $id
+        ]);
     }
 
-    
+
     /* ---------- GUARDAR NUEVO CANDIDATO ---------- */
     public function guardar(Request $request)
     {
@@ -154,6 +159,7 @@ class CandidatoController
                         ->where(fn ($q) => $q->where('idCandidatura', $request->idCandidatura)),
                 ],
                 'idCandidatura' => 'required|exists:candidatura,idCandidatura',
+                'eleccion_id' => 'nullable|integer|exists:elecciones,id',
             ],
             [
                 'nif.unique'   => 'El NIF ya está registrado.',
@@ -197,7 +203,7 @@ class CandidatoController
                     "El orden no puede ser mayor que el número de escaños de la provincia ($escanosProvincia)."
                 );
             }
-            
+
         });
 
         /* 3) Si algo falla, volvemos con errores */
@@ -216,6 +222,7 @@ class CandidatoController
                 'nif'           => $request->nif,
                 'orden'         => $request->orden,
                 'idCandidatura' => $request->idCandidatura,
+                'eleccion_id' => $request->input('eleccion_id'),
                 // 'elegido'     => 0   // si existe la columna y tiene DEFAULT 0
             ]);
 
@@ -240,7 +247,7 @@ class CandidatoController
             ->route('administracion')
             ->with('successEliminarCandidato', 'El candidato ha sido eliminado correctamente');
     }
-    
+
     public function mostrarProvincias()
     {
         $provincias = DB::table('localizacion')->select('provincia', 'nomProvincia')->distinct()->get();

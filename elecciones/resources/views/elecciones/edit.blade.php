@@ -1,14 +1,53 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Elección</title>
-    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-gray-100">
+@extends('layouts.app')
+
+@section('title', 'Editar Elección')
+
+@section('head')
+{{-- SweetAlert2 CDN --}}
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+{{-- Custom styles for tables (if any tables are added to this view later, or for site-wide consistency) --}}
+<style>
+    /* Estilos generales de las tablas (copiados de la primera vista) */
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 30px;
+        font-family: 'Arial', sans-serif;
+    }
+    th, td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: left;
+    }
+    th {
+        background-color: #8c0c34; /* Rojo cálido oscuro */
+        color: #fff6f4; /* Blanco roto */
+    }
+    .label-column {
+        text-align: left;
+    }
+    .divider-row {
+        border-bottom: 3px solid #000;
+    }
+    .text-porcentaje, .text-escano {
+        color: #8c0c34;
+        font-weight: bold;
+    }
+    /* Puedes añadir aquí otros estilos específicos para este formulario si lo necesitas */
+</style>
+@endsection
+
+@section('content')
 <div class="container mx-auto p-4">
-    <h1 class="text-3xl font-semibold text-center text-gray-800 my-8">Editar Elección</h1>
+    <h1 class="text-3xl font-semibold text-center text-orange-800 my-8">Editar Elección</h1>
+
+    {{-- Laravel session messages --}}
+    @if (session('success'))
+    <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
+        <strong class="font-bold">Éxito!</strong>
+        <span class="block sm:inline">{{ session('success') }}</span>
+    </div>
+    @endif
 
     <form action="{{ route('elecciones.update', $eleccion->id) }}" method="POST" class="bg-white shadow-md rounded-lg p-6">
         @csrf
@@ -66,29 +105,30 @@
             <label for="activa" class="block text-gray-700 text-sm font-bold mb-2">Activa:</label>
             <input type="checkbox" name="activa" id="activa" value="1" {{ old('activa', $eleccion->activa) ? 'checked' : '' }} class="mr-2"> Sí
         </div>
-        <div class="mb-4">
-            <label for="votos_nulos" class="block text-gray-700 text-sm font-bold mb-2">Votos Nulos:</label>
-            <input type="number" name="votos_nulos" id="votos_nulos" value="{{ old('votos_nulos', $eleccion->votos_nulos) }}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            @error('votos_nulos')
-            <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-            @enderror
-        </div>
 
-        <div class="mb-4">
-            <label for="abs tenciones" class="block text-gray-700 text-sm font-bold mb-2">Abstenciones:</label>
-            <input type="number" name="abstenciones" id="abstenciones" value="{{ old('abstenciones', $eleccion->abstenciones) }}" required class="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline">
-            @error('abstenciones')
-            <p class="text-red-500 text-xs italic mt-1">{{ $message }}</p>
-            @enderror
-        </div>
 
         <button type="submit" class="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline">
             Guardar Cambios
         </button>
+
         <a href="{{ route('elecciones.index') }}" class="bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline ml-2">
-            Cancelar
+            <button>    Cancelar</button>
         </a>
+
     </form>
 </div>
-</body>
-</html>
+@endsection
+
+@section('scripts')
+{{-- Script para mensajes de éxito tras la actualización --}}
+@if (session('successActualizar'))
+Swal.fire({
+icon: 'success',
+title: '¡Actualizado!',
+text: '{{ session('successActualizar') }}',
+confirmButtonColor: '#8c0c34', // Color del botón de confirmación
+confirmButtonText: 'Aceptar'
+});
+@endif
+{{-- Si tienes otros SweetAlerts para añadir, borrar, etc., puedes incluirlos aquí --}}
+@endsection

@@ -137,6 +137,9 @@ class PaginaController extends Controller
                 'ci.nombre as provincia',
                 'ci.idCircunscripcion' // Asegúrate de seleccionar el id de la circunscripción para el filtro
             ]);
+        if ($request->has('eleccion_id') && $request->eleccion_id != '') {
+            $query->where('can.eleccion_id', $request->eleccion_id);
+        }
 
         if ($request->filled('circunscripcion_candidatos')) {
             $query->where('ci.idCircunscripcion', $request->input('circunscripcion_candidatos'));

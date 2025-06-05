@@ -23,6 +23,7 @@ class Candidato extends Model
         'idCandidatura',
         'nif',
         'orden',
+        'eleccion_id',
     ];
 
     protected $casts = [

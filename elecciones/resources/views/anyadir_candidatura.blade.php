@@ -5,14 +5,14 @@
 @section('content')
     <h2>Añadir candidatura</h2>
 
-    <form method="POST" action="{{ route('candidatura.guardar') }}">
+        <form method="POST" action="{{ route('candidatura.guardar') }}">
         @csrf
-
+        <input type="hidden" name="eleccion_id" value="{{ $eleccion_id }}">
         <div>
             <label for="nombre">Nombre:</label>
             <input type="text" name="nombre" id="nombre" required>
         </div>
-        
+
         <div>
             <label for="color">Color:</label>
             <input type="text" name="color" id="color" required>
