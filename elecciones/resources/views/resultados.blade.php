@@ -39,39 +39,56 @@
             margin: 40px 0;
         }
 
-        /* Estilos de la paginación de los años */
-        .pagination-container {
+        .pagination-wrapper {
             display: flex;
+            align-items: center;
             justify-content: center;
-            margin-top: 20px;
+            text-decoration: none !important; 
+            gap: 10px;
+            margin-bottom: 25px;
+            overflow: hidden; /* evita que sobresalga nada */
+            height: auto;
         }
 
-        /* Separación entre las dos filas de paginación */
-        .pagination-container-year {
-            margin-bottom: 20px; /* Añadimos espacio entre la fila de los años y la fila de las páginas */
+        .year-scroll {
+            overflow-x: auto;
+            white-space: nowrap;
+            max-width: 80vw;
+            scrollbar-width: none;
+            -webkit-overflow-scrolling: touch;
+            height: auto;
+        }
+
+        .year-scroll::-webkit-scrollbar {
+            display: none;
         }
 
         .pagination {
-            list-style: none;
-            display: flex;
+            display: inline-flex;
+            gap: 10px;
             padding: 0;
             margin: 0;
-            flex-wrap: wrap; /* Asegura que la paginación se ajuste en pantallas pequeñas */
+            list-style: none;
+            align-items: center;
         }
 
         .pagination li {
-            margin: 0 5px;
+            flex: 0 0 auto;
         }
 
         .pagination a {
             text-decoration: none;
-            color: #8c0c34; /* texto granate */
-            padding: 5px 7px;
-            border-radius: 5px;
-            background-color: white; /* fondo blanco */
+            color: #8c0c34;
+            padding: 8px 12px;
+            border-radius: 6px;
+            background-color: white;
             border: 1px solid #8c0c34;
-            transition: background-color 0.3s ease, color 0.3s ease;
             font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+            display: inline-block;
+            height: 38px;
+            box-sizing: border-box;
         }
 
         .pagination a:hover {
@@ -80,24 +97,40 @@
         }
 
         .pagination .active a {
-            background-color: #8c0c34; /* Granate para la página activa */
+            background-color: #8c0c34;
             color: white;
-            border: 1px solid #8c0c34;
+            border: 2px solid #5a0b24;
+            font-weight: bold;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.2);
         }
 
-        /* Desaparecer flechas cuando no son posibles */
-        .pagination .disabled .pagination-arrow {
-            display: none;
-        }
-
-        /* Estilo de las flechas */
         .pagination-arrow {
             font-size: 18px;
             font-weight: bold;
             color: #8c0c34;
-            text-decoration: none;
-            padding: 10px;
+            padding: 8px 12px;
+            border: 1px solid #8c0c34;
+            border-radius: 6px;
+            background-color: white;
+            transition: background-color 0.3s ease;
+            cursor: pointer;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 38px;
         }
+
+        .pagination-arrow:hover {
+            background-color: #8c0c34;
+            color: white;
+        }
+
+        .pagination-arrow.disabled {
+            opacity: 0.4;
+            pointer-events: none;
+        }
+
 
         /* Hacer la paginación más compacta en pantallas pequeñas */
         @media (max-width: 600px) {
@@ -118,36 +151,27 @@
 
     <h2>Resultados</h2>
 
-    {{-- Lista de años disponibles --}}
-    <div class="pagination-container-year">
-        <ul class="pagination">
-            @if ($selectedYear && $years)
-                @php
-                    $currentYearIndex = array_search($selectedYear, $years);
-                @endphp
+    <div class="pagination-wrapper">
+        {{-- Flecha anterior --}}
+        @if ($selectedYear && $years && array_search($selectedYear, $years) > 0)
+            <a href="{{ route('resultados', ['year' => $years[array_search($selectedYear, $years) - 1]]) }}" class="pagination-arrow">&#8592;</a>
+        @endif
 
-                {{-- Flecha de Anterior --}}
-                @if ($currentYearIndex > 0)
-                    <li><a href="{{ route('resultados', ['year' => $years[$currentYearIndex - 1]]) }}" class="pagination-arrow">&#8592;</a></li>
-                @else
-                    <li class="disabled"><span class="pagination-arrow">&#8592;</span></li>
-                @endif
-
-                {{-- Páginas de Años --}}
-                @foreach($years as $index => $year_option)
-                    <li class="{{ $selectedYear == $year_option ? 'active' : '' }}">
-                        <a href="{{ route('resultados', ['year' => $year_option]) }}">{{ $year_option }}</a>
+        {{-- Contenedor scrollable --}}
+        <div class="year-scroll">
+            <ul class="pagination">
+                @foreach($years as $year)
+                    <li class="{{ ($selectedYear == $year || (!$selectedYear && strtolower($year) === 'actual')) ? 'active' : '' }}">
+                        <a href="{{ route('resultados', ['year' => $year]) }}">{{ $year }}</a>
                     </li>
                 @endforeach
+            </ul>
+        </div>
 
-                {{-- Flecha de Siguiente --}}
-                @if ($currentYearIndex < count($years) - 1)
-                    <li><a href="{{ route('resultados', ['year' => $years[$currentYearIndex + 1]]) }}" class="pagination-arrow">&#8594;</a></li>
-                @else
-                    <li class="disabled"><span class="pagination-arrow">&#8594;</span></li>
-                @endif
-            @endif
-        </ul>
+        {{-- Flecha siguiente --}}
+        @if ($selectedYear && $years && array_search($selectedYear, $years) < count($years) - 1)
+            <a href="{{ route('resultados', ['year' => $years[array_search($selectedYear, $years) + 1]]) }}" class="pagination-arrow">&#8594;</a>
+        @endif
     </div>
 
     @if ($selectedYear == 'Actual')
