@@ -143,6 +143,25 @@
     <h2>Administrar</h2>
     <p class="notice">Aquí un administrador puede realizar tareas de control y administración (<b>un administrador no puede votar</b>).</p>
 
+<div class="mb-4">
+    <a href="{{ route('elecciones.index') }}" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+        Mostrar las elecciones
+    </a>
+</div>
+<div class="mb-4">
+    <h3>Seleccionar Elección</h3>
+    <form method="GET" action="{{ route('administracion') }}#resultados">
+        <label for="eleccion_id">Elección:</label>
+        <select name="eleccion_id" id="eleccion_id" onchange="this.form.submit()">
+            <option value="">Todas las Elecciones</option>
+            @foreach ($elecciones as $eleccion)
+            <option value="{{ $eleccion->idEleccion }}" {{ request('eleccion_id') == $eleccion->idEleccion ? 'selected' : '' }}>
+            {{ $eleccion->nombre }} ({{ $eleccion->fechaInicio }})
+            </option>
+            @endforeach
+        </select>
+    </form>
+</div>
     <h3>Circunscripciones</h3>
     <table>
         <thead>
@@ -209,6 +228,7 @@
                     <form method="GET"
                           action="{{ route('administracion') }}#resultados">
                         <label for="circunscripcion">Circunscripción</label>
+                        <input type="hidden" name="eleccion_id" value="{{ request('eleccion_id') }}">
                         <select name="circunscripcion"
                                 id="circunscripcion"
                                 onchange="this.form.submit()">
@@ -261,9 +281,6 @@
             @endforeach
         </tbody>
     </table>
-    <a href="{{ route('candidatura.crear') }}">
-        <button>Añadir candidatura</button>
-    </a>
 <div id="resultados" style="margin-top: 20px;">
     {{ $candidaturas
     ->appends(request()->except('candidaturas_page'))
@@ -271,6 +288,10 @@
     ->links('pagination::simple-default')
     }}
 </div>
+<a href="{{ route('candidatura.crear', ['eleccion_id' => request('eleccion_id')]) }}">
+    <button>Añadir candidatura</button>
+</a>
+
 
     <h3>Candidatos</h3>
 
@@ -340,14 +361,15 @@
             @endforeach
         </tbody>
     </table>
-
+<p>Total de candidatos: {{ $candidatos->total() }}</p>
+<div class="margin-top: 20px;">
+    {{ $candidatos->appends(request()
+    ->except('candidatos_page'))
+    ->fragment('resultados_candidatos')
+    ->links('pagination::simple-default') }}
+</div>
     <a href="{{ route('candidato.crear') }}">
         <button>Añadir candidato</button>
     </a>
-    <div class="margin-top: 20px;">
-        {{ $candidatos->appends(request()
-        ->except('candidatos_page'))
-        ->fragment('resultados_candidatos')
-        ->links('pagination::simple-default') }}
-    </div>
+
     @endsection
