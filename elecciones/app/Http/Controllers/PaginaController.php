@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use App\Models\Eleccion;
 use League\Csv\Reader;
 
 class PaginaController extends Controller
@@ -105,7 +106,12 @@ class PaginaController extends Controller
 
     public function administracion(Request $request)
     {
+        $elecciones = Eleccion::all(); // Obtener todas las elecciones
+
         $query = DB::table('candidatura');
+        if ($request->has('eleccion_id') && $request->eleccion_id != '') {
+            $query->where('eleccion_id', $request->eleccion_id);
+        }
 
         if ($request->filled('circunscripcion')) {
             $query->where('idCircunscripcion', $request->input('circunscripcion'));
@@ -114,8 +120,8 @@ class PaginaController extends Controller
             $query->where('nombre', 'like', '%' . $request->nombre . '%');
         }
 
-
         $candidaturas = $query->paginate(10, ['*'], 'candidaturas_page');
+
         $query = DB::table('candidato as can')
             ->join('candidatura as c', 'can.idCandidatura', '=', 'c.idCandidatura')
             ->join('circunscripcion as ci', 'c.idCircunscripcion', '=', 'ci.idCircunscripcion')
@@ -138,8 +144,7 @@ class PaginaController extends Controller
 
         $candidatos = $query->paginate(10, ['*'], 'candidatos_page');
 
-
-        return view('administracion', compact('candidaturas','candidatos'));
+        return view('administracion', compact('candidaturas','candidatos', 'elecciones')); // Pasar $elecciones a la vista
     }
 
     public function usuario()

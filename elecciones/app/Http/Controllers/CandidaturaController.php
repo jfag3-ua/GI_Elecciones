@@ -95,15 +95,74 @@ class CandidaturaController extends Controller
     }
 
     // Mostrar el formulario de edición
-    public function editar($id)
+    public function editar($id, Request $request)
     {
+        // 1. Obtener la candidatura que se está editando
         $candidatura = DB::table('candidatura')->where('idCandidatura', $id)->first();
 
         if (!$candidatura) {
             abort(404, 'Candidatura no encontrada');
         }
 
-        return view('editar_candidatura', compact('candidatura'));
+        // Obtener el eleccion_id de la candidatura actual
+        $idCandidaturaActual = $candidatura->idCandidatura;
+        $eleccionIdActual = $candidatura->eleccion_id; // Asegúrate de que este campo exista en tu tabla 'candidatura'
+
+        // 2. Definir las circunscripciones de forma fija en el controlador
+        // Esto es el equivalente a lo que tenías en tu @php de la vista
+        $circunscripciones = [
+            1 => 'Alicante',
+            2 => 'Valencia',
+            3 => 'Castellón'
+        ];
+
+        // 3. Construir la consulta para los candidatos
+        $queryCandidatos = DB::table('candidato as can')
+            ->join('candidatura as c', 'can.idCandidatura', '=', 'c.idCandidatura')
+            // No necesitas un join a 'circunscripcion' aquí si 'ci.nombre' no es necesario para la tabla,
+            // pero si necesitas el nombre de la provincia para mostrarlo en la tabla,
+            // y 'can.provincia' no existe, la unión es necesaria.
+            // Si can.provincia ya guarda el nombre, no hace falta el join a circunscripción.
+            // Si can.idCircunscripcion guarda el ID, y quieres el nombre, sí necesitas el join o mapear.
+            // Para mantener la compatibilidad con tu vista:
+            ->join('circunscripcion as ci', 'c.idCircunscripcion', '=', 'ci.idCircunscripcion') // Asumo que `c.idCircunscripcion` es el int que te relaciona.
+            ->select([
+                'can.idCandidato',
+                'can.nombre',
+                'can.apellidos',
+                'can.nif',
+                'can.orden',
+                'can.elegido',
+                'can.idCandidatura',
+                'c.nombre as nombreCandidatura',
+                'ci.nombre as provincia', // Obtiene el nombre de la provincia de la tabla 'circunscripcion'
+                'ci.idCircunscripcion',   // Necesario para el filtro de circunscripción por ID
+                'can.eleccion_id'
+            ]);
+
+        // 4. Aplicar los filtros obligatorios (idCandidatura y eleccion_id de la candidatura actual)
+        $queryCandidatos->where('can.idCandidatura', $idCandidaturaActual);
+        $queryCandidatos->where('can.eleccion_id', $eleccionIdActual);
+
+
+        // 5. Aplicar filtros opcionales de la tabla (nombre, circunscripción)
+        if ($request->filled('nombre_candidato')) {
+            $queryCandidatos->where('can.nombre', 'like', '%' . $request->input('nombre_candidato') . '%');
+        }
+
+        if ($request->filled('circunscripcion_candidatos')) {
+            // Aquí, 'circunscripcion_candidatos' del request es el ID (1, 2, 3)
+            // Y el campo en tu tabla `candidato` o `candidatura` que guarda ese ID es `idCircunscripcion`.
+            // Asumo que es `ci.idCircunscripcion` si el join a `circunscripcion` es válido,
+            // o `c.idCircunscripcion` si el candidato tiene una relación directa con la circunscripción a través de la candidatura.
+            $queryCandidatos->where('ci.idCircunscripcion', $request->input('circunscripcion_candidatos'));
+        }
+
+        // 6. Obtener los candidatos paginados
+        $candidatos = $queryCandidatos->paginate(10, ['*'], 'candidatos_page');
+
+
+        return view('editar_candidatura', compact('candidatura', 'candidatos', 'circunscripciones'));
     }
 
     // Guardar los cambios
@@ -128,27 +187,31 @@ class CandidaturaController extends Controller
         return redirect()->route('administracion')->with('successActualizar', 'La candidatura ha sido actualizada correctamente');
     }
 
-    public function crear()
+    public function crear($id)
     {
-        return view('anyadir_candidatura');
+        dd($id);
+        return view('anyadir_candidatura',['eleccion_id' => $id]);
     }
 
     public function guardar(Request $request)
     {
+        dd($request);
         $request->validate([
             'nombre' => 'required|string|max:255',
             'color' => 'required|string|max:255',
-            'idCircunscripcion' => 'required|integer'
+            'idCircunscripcion' => 'required|integer',
+            'eleccion_id' => 'nullable|integer|exists:elecciones,idEleccion',
         ]);
 
         Candidatura::create([
             'nombre' => $request->nombre,
             'color' => $request->color,
             'idCircunscripcion' => $request->idCircunscripcion,
-            'escanyosElegidos' => 0
+            'escanyosElegidos' => 0,
+            'eleccion_id' => $request->input('eleccion_id')
         ]);
 
-        return redirect()->route('administracion')->with('successAnyadir', 'La candidatura ha sido añadida correctamente');
+        return redirect()->route('administracion', ['eleccion_id' => $request->input('eleccion_id')])->with('successAnyadir', 'La candidatura ha sido añadida correctamente');
     }
 
     public function eliminar($id)
