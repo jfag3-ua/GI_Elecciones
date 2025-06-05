@@ -189,18 +189,18 @@ class CandidaturaController extends Controller
 
     public function crear($id)
     {
-        dd($id);
         return view('anyadir_candidatura',['eleccion_id' => $id]);
     }
 
     public function guardar(Request $request)
     {
-        dd($request);
+
+   
         $request->validate([
             'nombre' => 'required|string|max:255',
             'color' => 'required|string|max:255',
             'idCircunscripcion' => 'required|integer',
-            'eleccion_id' => 'nullable|integer|exists:elecciones,idEleccion',
+            'eleccion_id' => 'nullable|integer|exists:elecciones,id',
         ]);
 
         Candidatura::create([

@@ -10,7 +10,7 @@ class Candidatura extends Model
 {
     protected $table = 'candidatura';
     protected $primaryKey = 'idCandidatura'; // Columna que es clave primaria
-    protected $fillable = ['nombre', 'color', 'idCircunscripcion', 'escanyosElegidos'];
+    protected $fillable = ['nombre', 'color', 'idCircunscripcion', 'escanyosElegidos','eleccion_id'];
     public $timestamps = false; // <--- Esto evita que Laravel intente guardar created_at y updated_at
     public function elecciones(): BelongsTo
     {

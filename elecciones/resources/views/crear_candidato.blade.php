@@ -33,7 +33,7 @@
 
 <form method="POST" action="{{ route('candidato.guardar') }}">
     @csrf
-
+    <input type="hidden" name="eleccion_id" value="{{ $eleccion_id }}">
     {{-- Nombre --}}
     <div>
         <label>Nombre:</label>

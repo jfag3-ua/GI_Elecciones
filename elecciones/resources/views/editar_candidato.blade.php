@@ -68,8 +68,7 @@
         @enderror
     </div>
 
-    {{-- Candidatura --}}
-    <div>
+
         <label>Candidatura:</label>
         <select name="idCandidatura" required>
             @foreach ($candidaturas as $cand)
@@ -82,7 +81,6 @@
         @error('idCandidatura')
             <div style="color: #b91c1c;">{{ $message }}</div>
         @enderror
-    </div>
 
     {{-- Botones --}}
     <div style="margin-top: 16px;">

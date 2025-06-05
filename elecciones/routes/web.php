@@ -67,7 +67,7 @@ Route::middleware([\App\Http\Middleware\IsAdmin::class])->group(function () {
     // Candidatos
     Route::get('/administracion/candidato/editar/{id}', [CandidatoController::class, 'editar'])->name('candidato.editar');
     Route::post('/administracion/candidato/actualizar/{id}', [CandidatoController::class, 'actualizar'])->name('candidato.actualizar');
-    Route::get('/administracion/candidato/crear', [CandidatoController::class, 'crear'])->name('candidato.crear');
+    Route::get('/administracion/candidato/crear/{eleccion_id?}', [CandidatoController::class, 'crear'])->name('candidato.crear');
     Route::post('/administracion/candidato/guardar', [CandidatoController::class, 'guardar'])->name('candidato.guardar');
     Route::delete('/administracion/candidato/borrar/{id}', [CandidatoController::class, 'borrar'])->name('candidato.borrar');
 });
