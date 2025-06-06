@@ -31,6 +31,7 @@
         <input type="text" value="{{ $candidato->idCandidato }}" disabled>
     </div>
 
+
     {{-- Nombre --}}
     <div>
         <label>Nombre:</label>
