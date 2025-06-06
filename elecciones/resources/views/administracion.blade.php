@@ -287,6 +287,7 @@
             @endforeach
         </tbody>
     </table>
+<p>Total de candidaturas: {{ $candidaturas->total() }}</p>
 <div id="resultados" style="margin-top: 20px;">{{ $candidaturas
     ->appends(request()->except('candidaturas_page'))
     ->fragment('resultados')
