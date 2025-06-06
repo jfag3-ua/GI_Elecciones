@@ -34,8 +34,45 @@ class CandidaturaController extends Controller
             ->select('candidatura.*')  // Selecciona las candidaturas correspondientes
             ->get();
 
+        // Obtener la provincia del usuario
+        $nombreProvincia = DB::table('usuario')
+        ->join('censo', 'usuario.NIF', '=', 'censo.NIF')
+        ->join('direcciones', 'censo.IDDIRECCION', '=', 'direcciones.IDDIRECCION')
+        ->where('usuario.NIF', $usuario->NIF)
+        ->select('direcciones.PROVINCIA')
+        ->first();
+
+        $provinciaId = DB::table('localizacion')
+            ->where('nomProvincia', $nombreProvincia->PROVINCIA)
+            ->value('provincia');
+
+        // Subconsulta para agrupar provincias
+        $locSub = DB::table('localizacion')
+            ->select('provincia', DB::raw('MIN(nomProvincia) as nomProvincia'))
+            ->groupBy('provincia');
+
+        // Obtener candidatos agrupados por partido
+        $candidatosPorPartido = DB::table('candidato as c')
+            ->join('candidatura as cand', 'c.idCandidatura', '=', 'cand.idCandidatura')
+            ->join('circunscripcion as circ', 'cand.idCircunscripcion', '=', 'circ.idCircunscripcion')
+            ->joinSub($locSub, 'loc', function ($join) {
+                $join->on('circ.idCircunscripcion', '=', 'loc.provincia');
+            })
+            ->where('loc.provincia', $provinciaId)
+            ->select(
+                'c.nombre as nombreCandidato',
+                'c.apellidos',
+                'c.orden',
+                'cand.nombre as nombrePartido',
+                'cand.color'
+            )
+            ->orderBy('cand.idCandidatura')
+            ->orderBy('c.orden')
+            ->get()
+            ->groupBy('nombrePartido');
+
         // Pasar la variable $candidaturas a la vista 'voto'
-        return view('voto', compact('candidaturas'));
+        return view('voto', compact('candidaturas', 'candidatosPorPartido'));
     }
 
     // Guardar el voto
@@ -156,6 +193,44 @@ class CandidaturaController extends Controller
         Candidatura::destroy($id); // o Candidatura::find($id)->delete();
         return redirect()->route('administracion')->with('successEliminar', 'La candidatura ha sido eliminada correctamente');
     }
+    /*public function candidatosPorProvincia()
+    {
+        // Obtener el usuario autenticado
+        $usuario = Auth::user();
 
+        $nombreProvincia = DB::table('usuario')
+        ->join('censo', 'usuario.NIF', '=', 'censo.NIF')  // Cruza con censo por NIF
+        ->join('direcciones', 'censo.IDDIRECCION', '=', 'direcciones.IDDIRECCION')  // Cruza con direcciones por IDDIRECCION
+        ->where('usuario.NIF', $usuario->NIF)  // Filtra por el NIF del usuario autenticado
+        ->select('direcciones.PROVINCIA')  // Selecciona los datos necesarios
+        ->first();  // Tomamos solo el primer resultado
 
+        $provinciaId = DB::table('localizacion')
+            ->where('nomProvincia', $nombreProvincia->PROVINCIA)
+            ->value('provincia'); // Obtenemos el ID de la provincia
+
+        $locSub = DB::table('localizacion')
+            ->select('provincia', DB::raw('MIN(nomProvincia) as nomProvincia'))
+            ->groupBy('provincia');
+
+        $candidatosPorPartido = DB::table('candidato as c')
+            ->join('candidatura as cand', 'c.idCandidatura', '=', 'cand.idCandidatura')
+            ->join('circunscripcion as circ', 'cand.idCircunscripcion', '=', 'circ.idCircunscripcion')
+            ->joinSub($locSub, 'loc', function ($join) {
+                $join->on('circ.idCircunscripcion', '=', 'loc.provincia');
+            })
+            ->where('loc.provincia', $provinciaId)
+            ->select(
+                'c.nombre as nombreCandidato',
+                'c.apellidos',
+                'c.orden',
+                'cand.nombre as nombrePartido',
+                'cand.color'
+            )
+            ->orderBy('cand.idCandidatura')
+            ->orderBy('c.orden')
+            ->get()
+            ->groupBy('nombrePartido');
+            return view('candidatos_por_provincia', compact('candidatosPorPartido', 'provinciaId', 'nombreProvincia'));
+    }*/
 }
