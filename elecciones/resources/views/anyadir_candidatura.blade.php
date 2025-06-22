@@ -9,7 +9,7 @@
         @csrf
         <input type="hidden" name="eleccion_id" value="{{ $eleccion_id }}">
         <div>
-            <label for="nombre">Nombre:</label>
+            <label for="nombree">Nombre:</label>
             <input type="text" name="nombre" id="nombre" required>
         </div>
 
