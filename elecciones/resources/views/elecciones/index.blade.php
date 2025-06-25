@@ -50,9 +50,14 @@
         <span class="block sm:inline">{{ session('success') }}</span>
     </div>
     @endif
+    <div class="flex justify-between items-center mb-4">
         <a href="{{ route('elecciones.create') }}">
             <button>Añadir nuevas elecciones</button>
         </a>
+        <a href="{{ route('elecciones.calendario') }}" class="ml-4">
+            <button style="background-color:#36b9cc;color:white;padding:8px 16px;border-radius:5px;">Ver calendario de elecciones</button>
+        </a>
+    </div>
 
     <div class="overflow-x-auto">
         <table >

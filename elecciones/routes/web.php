@@ -24,9 +24,9 @@ Route::get('/registro', [RegistroController::class, 'showRegisterForm'])->name('
 Route::get('/provincias', [CandidatoController::class, 'mostrarProvincias'])->name('provincias');
 Route::get('/provincias/{provincia}/candidatos', [CandidatoController::class, 'candidatosPorProvincia'])->name('candidatos.porProvincia');
 
-
-Route::get('/calendario', [EleccionController::class, 'mostrarCalendario']);
+Route::get('/elecciones/calendario', [App\Http\Controllers\EleccionController::class, 'mostrarCalendario'])->name('elecciones.calendario');
 Route::resource('elecciones', EleccionController::class);
+
 Route::get('/api/elecciones', [EleccionController::class, 'getEleccionesForDropdown'])->name('api.elecciones');
 Route::get('/api/elecciones/{eleccion}/fechas', [EleccionController::class, 'getFechasEleccion'])->name('api.elecciones.fechas');
 
