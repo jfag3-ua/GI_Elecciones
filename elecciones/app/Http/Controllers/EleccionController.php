@@ -31,7 +31,8 @@ class EleccionController extends Controller
     }
     public function mostrarCalendario(): View
     {
-        return view('elecciones.calendario'); // 'calendario' es el nombre de tu archivo blade.php
+        $elecciones = \App\Models\Eleccion::all();
+        return view('elecciones.calendario', compact('elecciones'));
     }
 
     public function index(): View
