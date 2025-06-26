@@ -262,17 +262,10 @@ class CandidatoController
             ->where('provincia', $provinciaId)
             ->value('nomProvincia');
 
-        $locSub = DB::table('localizacion')
-            ->select('provincia', DB::raw('MIN(nomProvincia) as nomProvincia'))
-            ->groupBy('provincia');
-
         $query = DB::table('candidato as c')
             ->join('candidatura as cand', 'c.idCandidatura', '=', 'cand.idCandidatura')
             ->join('circunscripcion as circ', 'cand.idCircunscripcion', '=', 'circ.idCircunscripcion')
-            ->joinSub($locSub, 'loc', function ($join) {
-                $join->on('circ.idCircunscripcion', '=', 'loc.provincia');
-            })
-            ->where('loc.provincia', $provinciaId)
+            ->where('circ.nombre', $provinciaId)
             ->select(
                 'c.nombre as nombreCandidato',
                 'c.apellidos',
@@ -282,7 +275,7 @@ class CandidatoController
                 'cand.eleccion_id'
             );
         if ($eleccionId) {
-            $query->where('cand.eleccion_id', $eleccionId);
+            $query->where('c.eleccion_id', $eleccionId);
         }
         $candidatosPorPartido = $query
             ->orderBy('cand.idCandidatura')

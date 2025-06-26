@@ -16,12 +16,13 @@ class DatabaseSeeder extends Seeder
             LocalizacionSeeder::class,
             DireccionesSeeder::class,
             CensoSeeder::class,
+            EleccionesSeeder::class,
             CandidaturaSeeder::class,
             UsuariosSeeder::class,
             CandidatosSeeder::class,
             VotosSeeder::class,
             AdministradoresSeeder::class,
-            EleccionesSeeder::class,
+           
             VotosFakeSeeder::class,
             CandidaturasCandidatosFakeSeeder::class,
         ]);
