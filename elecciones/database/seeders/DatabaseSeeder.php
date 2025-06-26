@@ -22,6 +22,8 @@ class DatabaseSeeder extends Seeder
             VotosSeeder::class,
             AdministradoresSeeder::class,
             EleccionesSeeder::class,
+            VotosFakeSeeder::class,
+            CandidaturasCandidatosFakeSeeder::class,
         ]);
     }
 }

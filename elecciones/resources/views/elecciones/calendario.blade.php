@@ -100,7 +100,23 @@
     }
 
     document.addEventListener('DOMContentLoaded', function() {
-        document.getElementById('eleccionesSelect').addEventListener('change', renderCalendar);
+        document.getElementById('eleccionesSelect').addEventListener('change', function() {
+            // Autocompletar el input de mes con el mes/año de la primera elección seleccionada
+            const selected = Array.from(this.selectedOptions).map(opt => parseInt(opt.value));
+            if (selected.length > 0) {
+                const eleccion = elecciones.find(e => e.id === selected[0]);
+                if (eleccion && eleccion.fecha_inicio) {
+                    // fecha_inicio puede ser 'YYYY-MM-DD' o 'YYYY-MM-DDTHH:MM:SS', tomamos los dos primeros segmentos
+                    const fecha = new Date(eleccion.fecha_inicio);
+                    if (!isNaN(fecha)) {
+                        const year = fecha.getFullYear();
+                        const month = (fecha.getMonth() + 1).toString().padStart(2, '0');
+                        document.getElementById('gotoMonth').value = `${year}-${month}`;
+                    }
+                }
+            }
+            renderCalendar();
+        });
         renderCalendar();
     });
 </script>
