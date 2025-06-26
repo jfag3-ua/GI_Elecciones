@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Candidatura extends Model
 {
+    use HasFactory;
+
     protected $table = 'candidatura';
     protected $primaryKey = 'idCandidatura'; // Columna que es clave primaria
     protected $fillable = ['nombre', 'color', 'idCircunscripcion', 'escanyosElegidos','eleccion_id'];
