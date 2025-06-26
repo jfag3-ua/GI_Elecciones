@@ -1,7 +1,23 @@
 @extends('layouts.app')
 
 @section('content')
-<a href="{{ route('provincias') }}" style="display: inline-block; margin-bottom: 20px; color: #8c0c34; font-weight: bold; text-decoration: none;">← Volver a provincias</a>
+<a href="{{ route('provincias', ['eleccion_id' => $eleccionId]) }}" style="display: inline-block; margin-bottom: 20px; color: #8c0c34; font-weight: bold; text-decoration: none;">← Volver a provincias</a>
+
+<form id="form-eleccion" method="GET" style="margin-bottom: 2rem; max-width: 400px;">
+    <input type="hidden" name="provincia" value="{{ $provinciaId }}">
+    <label for="eleccion_id" style="font-weight: bold; color: #8c0c34;">Elija la elección:</label>
+    <select name="eleccion_id" id="eleccion_id" onchange="document.getElementById('form-eleccion').submit();" style="margin-left: 10px;">
+        <option value="">Todas las elecciones</option>
+        @php
+            $elecciones = \DB::table('elecciones')->orderBy('fecha_inicio', 'desc')->get(['id', 'nombre']);
+        @endphp
+        @foreach ($elecciones as $eleccion)
+            <option value="{{ $eleccion->id }}" {{ (isset($eleccionId) && $eleccionId == $eleccion->id) ? 'selected' : '' }}>
+                {{ $eleccion->nombre }}
+            </option>
+        @endforeach
+    </select>
+</form>
 
 <h3 style="margin-bottom: 2rem;">
 Explore los candidatos por partido en la provincia de {{ $nombreProvincia ?? 'Desconocida' }}

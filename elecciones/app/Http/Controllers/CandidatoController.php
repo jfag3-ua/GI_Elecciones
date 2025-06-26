@@ -251,11 +251,13 @@ class CandidatoController
     public function mostrarProvincias()
     {
         $provincias = DB::table('localizacion')->select('provincia', 'nomProvincia')->distinct()->get();
-        return view('provincias', compact('provincias'));
+        $elecciones = DB::table('elecciones')->orderBy('fecha_inicio', 'desc')->get(['id', 'nombre']);
+        return view('provincias', compact('provincias', 'elecciones'));
     }
 
-    public function candidatosPorProvincia($provinciaId)
+    public function candidatosPorProvincia($provinciaId, Request $request)
     {
+        $eleccionId = $request->input('eleccion_id');
         $nombreProvincia = DB::table('localizacion')
             ->where('provincia', $provinciaId)
             ->value('nomProvincia');
@@ -264,7 +266,7 @@ class CandidatoController
             ->select('provincia', DB::raw('MIN(nomProvincia) as nomProvincia'))
             ->groupBy('provincia');
 
-        $candidatosPorPartido = DB::table('candidato as c')
+        $query = DB::table('candidato as c')
             ->join('candidatura as cand', 'c.idCandidatura', '=', 'cand.idCandidatura')
             ->join('circunscripcion as circ', 'cand.idCircunscripcion', '=', 'circ.idCircunscripcion')
             ->joinSub($locSub, 'loc', function ($join) {
@@ -276,12 +278,17 @@ class CandidatoController
                 'c.apellidos',
                 'c.orden',
                 'cand.nombre as nombrePartido',
-                'cand.color'
-            )
+                'cand.color',
+                'cand.eleccion_id'
+            );
+        if ($eleccionId) {
+            $query->where('cand.eleccion_id', $eleccionId);
+        }
+        $candidatosPorPartido = $query
             ->orderBy('cand.idCandidatura')
             ->orderBy('c.orden')
             ->get()
             ->groupBy('nombrePartido');
-            return view('candidatos_por_provincia', compact('candidatosPorPartido', 'provinciaId', 'nombreProvincia'));
+        return view('candidatos_por_provincia', compact('candidatosPorPartido', 'provinciaId', 'nombreProvincia', 'eleccionId'));
     }
 }

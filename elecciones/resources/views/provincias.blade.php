@@ -5,6 +5,18 @@
 @section('content')
 <h2 style="margin-bottom: 3rem;">Seleccione una provincia para ver los candidatos:</h2>
 
+<form id="form-eleccion" method="GET" style="margin-bottom: 2rem; max-width: 400px;">
+    <label for="eleccion_id" style="font-weight: bold; color: #8c0c34;">Elija la elección:</label>
+    <select name="eleccion_id" id="eleccion_id" onchange="document.getElementById('form-eleccion').submit();" style="margin-left: 10px;">
+        <option value="">Todas las elecciones</option>
+        @foreach ($elecciones as $eleccion)
+            <option value="{{ $eleccion->id }}" {{ request('eleccion_id') == $eleccion->id ? 'selected' : '' }}>
+                {{ $eleccion->nombre }}
+            </option>
+        @endforeach
+    </select>
+</form>
+
 <style>
     .provincia-grid {
         display: grid;
@@ -42,7 +54,7 @@
 <div class="provincia-grid">
     @foreach ($provincias as $provincia)
         <div class="provincia-card" tabindex="0">
-            <a href="{{ route('candidatos.porProvincia', ['provincia' => $provincia->provincia]) }}">
+            <a href="{{ route('candidatos.porProvincia', ['provincia' => $provincia->provincia, 'eleccion_id' => request('eleccion_id')]) }}">
                 {{ $provincia->nomProvincia }}
             </a>
         </div>
