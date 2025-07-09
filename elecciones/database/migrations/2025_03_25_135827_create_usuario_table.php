@@ -12,6 +12,7 @@ return new class extends Migration
             $table->string('NIF')->primary();
             $table->string('NOMBREUSUARIO')->unique();
             $table->string('CONTRASENYA');
+            $table->string('correo')->unique();
             $table->boolean('votado')->default(0);
             $table->timestamps();
         });

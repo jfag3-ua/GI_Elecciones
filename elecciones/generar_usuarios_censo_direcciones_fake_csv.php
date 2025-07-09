@@ -1,7 +1,7 @@
 <?php
 
 // Cantidad de usuarios/censados/direcciones
-$total = 100000;
+$total = 1000000;
 
 // Abrir archivo único
 $archivo = fopen('usuarios_censo_direcciones_fake.csv', 'w');
@@ -9,12 +9,11 @@ $archivo = fopen('usuarios_censo_direcciones_fake.csv', 'w');
 // Cabecera
 fputcsv($archivo, [
     'NIF', 'CONTRASENYA', 'IDDIRECCION', 'CLAVE', 'NOMBRE', 'APELLIDOS', 'FECHANAC', 'SEXO',
-    'PROVINCIA', 'CIUDAD', 'CPOSTAL', 'NOMVIA', 'NUMERO', 'BIS', 'PISO', 'BLOQUE', 'PUERTA'
+    'PROVINCIA', 'CIUDAD', 'CPOSTAL', 'NOMVIA', 'NUMERO', 'BIS', 'PISO', 'BLOQUE', 'PUERTA', 'CORREO'
 ]);
 
 // Hash bcrypt precomputado para 'password'
-$password = '$2y$10$abcdefghijklmnopqrstuv1234567890abcdefghi';
-
+$password = password_hash('password', PASSWORD_BCRYPT);
 $provincias = ['Alicante', 'Castellón', 'Valencia'];
 $nombres = ['Juan', 'Ana', 'Pedro', 'Lucía', 'Carlos', 'María', 'Javier', 'Laura'];
 $apellidos = ['García', 'Martínez', 'López', 'Sánchez', 'Pérez', 'Gómez', 'Ruiz', 'Fernández'];
@@ -38,9 +37,10 @@ for ($i = 1; $i <= $total; $i++) {
     $apellido = $apellidos[$i % 8];
     $fechanac = rand(1960, 2005) . '-' . str_pad(rand(1, 12), 2, '0', STR_PAD_LEFT) . '-' . str_pad(rand(1, 28), 2, '0', STR_PAD_LEFT);
     $sexo = $sexos[$i % 2];
+    $correo = strtolower($nombre . $i . '@mail.com');
     fputcsv($archivo, [
         $nif, $password, $iddir, $clave, $nombre, $apellido, $fechanac, $sexo,
-        $provincia, $ciudad, $cpostal, $nomvia, $numero, $bis, $piso, $bloque, $puerta
+        $provincia, $ciudad, $cpostal, $nomvia, $numero, $bis, $piso, $bloque, $puerta, $correo
     ]);
 }
 

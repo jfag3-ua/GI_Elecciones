@@ -9,33 +9,60 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Localizacion;
 use App\Models\Voto;
 use Illuminate\Support\Facades\Log;
+use App\Models\Eleccion;
 
 class CandidaturaController extends Controller
 {
     // Método para mostrar las candidaturas
-    public function votar()
+    public function votar(Request $request)
     {
-        // Obtener el usuario autenticado
         $usuario = Auth::user();
 
-        // Verificar si el usuario ya ha votado
         if ($usuario->votado == 1) {
-            // Si ya ha votado, redirigir a la vista de resultados o mostrar un mensaje
-            return view('voto')->with('votado', true);  // Puedes pasar una variable 'votado' para mostrar el mensaje en la vista
+            return view('voto')->with('votado', true);
         }
 
-        // Obtener todas las candidaturas desde la base de datos, ordenadas por nombre
-        $candidaturas = DB::table('usuario')
-            ->join('censo', 'usuario.NIF', '=', 'censo.NIF')  // Cruza con censo por NIF
-            ->join('direcciones', 'censo.IDDIRECCION', '=', 'direcciones.IDDIRECCION')  // Cruza con direcciones por IDDIRECCION
-            ->join('circunscripcion', 'direcciones.PROVINCIA', '=', 'circunscripcion.Nombre')  // Cruza con circunscripcion por PROVINCIA
-            ->join('candidatura', 'circunscripcion.idCircunscripcion', '=', 'candidatura.idCircunscripcion')  // Cruza con candidaturas por idCircunscripcion
-            ->where('usuario.NIF', auth()->user()->NIF)  // Filtra por el NIF del usuario autenticado
-            ->select('candidatura.*')  // Selecciona las candidaturas correspondientes
-            ->get();
+        // Obtener todas las elecciones en las que NO ha votado
+        $usuarioNIF = $usuario->NIF;
+        $eleccionesVotadas = DB::table('voto')
+            ->join('candidatura', 'voto.voto', '=', 'candidatura.nombre')
+            ->join('usuario', function($join) use ($usuarioNIF) {
+                $join->on('usuario.NIF', '=', DB::raw("'$usuarioNIF'"));
+            })
+            ->select('candidatura.eleccion_id')
+            ->distinct()
+            ->pluck('candidatura.eleccion_id')
+            ->toArray();
 
-        // Pasar la variable $candidaturas a la vista 'voto'
-        return view('voto', compact('candidaturas'));
+        $elecciones = Eleccion::whereNotIn('id', $eleccionesVotadas)->get();
+        $eleccion_id = $request->input('eleccion_id');
+        $candidaturas = collect();
+
+        if ($eleccion_id) {
+            // OPTIMIZACIÓN: Obtener primero la provincia del usuario
+            $direccion = DB::table('usuario')
+                ->join('censo', 'usuario.NIF', '=', 'censo.NIF')
+                ->join('direcciones', 'censo.IDDIRECCION', '=', 'direcciones.IDDIRECCION')
+                ->where('usuario.NIF', $usuario->NIF)
+                ->select('direcciones.PROVINCIA')
+                ->first();
+
+            $circunscripcion = null;
+            if ($direccion) {
+                $circunscripcion = DB::table('circunscripcion')
+                    ->where('NOMBRE', $direccion->PROVINCIA)
+                    ->first();
+            }
+
+            if ($circunscripcion) {
+                $candidaturas = DB::table('candidatura')
+                    ->where('idCircunscripcion', $circunscripcion->idCircunscripcion)
+                    ->where('eleccion_id', $eleccion_id)
+                    ->get();
+            }
+        }
+
+        return view('voto', compact('candidaturas', 'elecciones', 'eleccion_id'));
     }
 
     // Guardar el voto
@@ -71,14 +98,17 @@ class CandidaturaController extends Controller
             ->where('codpos', $direccion->CPOSTAL)  // Coincide con 'codpos' en la tabla 'localizacion'
             ->first();  // Tomamos el primer resultado
 
-        // Verificar si se ha encontrado una localización
+        // Si no existe la localización, la creamos automáticamente
         if (!$localizacion) {
-            dd('No se encontró una localización válida en la tabla localizacion.');
-            return redirect()->route('voto')->with('error', 'No se encontró una localización válida para tu voto.');
+            $localizacion_id = DB::table('localizacion')->insertGetId([
+                'nomProvincia' => $direccion->PROVINCIA,
+                'provincia'    => $direccion->PROVINCIA,
+                'ciudad'       => $direccion->CIUDAD,
+                'codpos'       => $direccion->CPOSTAL,
+            ]);
+        } else {
+            $localizacion_id = $localizacion->id;
         }
-
-        // Obtener el id de la localización
-        $localizacion_id = $localizacion->id;
 
         // Crear el voto
         $voto = new Voto();
@@ -86,6 +116,20 @@ class CandidaturaController extends Controller
         $voto->localizacion_id = $localizacion_id;   // Guardamos el localizacion_id
         // Guardar el voto en la base de datos
         $voto->save();
+
+        // Obtener la candidatura votada
+        $candidatura = \App\Models\Candidatura::where('nombre', $request->input('candidato'))->first();
+
+        // Obtener la elección asociada
+        $eleccion = null;
+        if ($candidatura && $candidatura->eleccion_id) {
+            $eleccion = \App\Models\Eleccion::find($candidatura->eleccion_id);
+        }
+
+        // Enviar correo al usuario
+        if ($usuario->correo) {
+            \Mail::to($usuario->correo)->send(new \App\Mail\VotoConfirmado($candidatura, $eleccion, now()));
+        }
 
         $usuario->votado = 1;
         $usuario->save();

@@ -10,10 +10,11 @@ FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
-(NIF, @contrasenya, @iddir, @clave, @nombre, @apellidos, @fechanac, @sexo, @provincia, @ciudad, @cpostal, @nomvia, @numero, @bis, @piso, @bloque, @puerta)
+(NIF, @contrasenya, @iddir, @clave, @nombre, @apellidos, @fechanac, @sexo, @provincia, @ciudad, @cpostal, @nomvia, @numero, @bis, @piso, @bloque, @puerta, @correo)
 SET 
   CONTRASENYA = @contrasenya,
   NOMBREUSUARIO = NIF,
+  correo = @correo,
   votado = 0,
   created_at = NOW(),
   updated_at = NOW();
@@ -34,6 +35,6 @@ FIELDS TERMINATED BY ','
 ENCLOSED BY '"'
 LINES TERMINATED BY '\n'
 IGNORE 1 LINES
-(NIF, IDDIRECCION, CLAVE, NOMBRE, APELLIDOS, FECHANAC, SEXO, @provincia, @ciudad, @cpostal, @nomvia, @numero, @bis, @piso, @bloque, @puerta);
+(NIF, @contrasenya, IDDIRECCION, CLAVE, NOMBRE, APELLIDOS, FECHANAC, SEXO, @provincia, @ciudad, @cpostal, @nomvia, @numero, @bis, @piso, @bloque, @puerta);
 
 SET foreign_key_checks = 1; 

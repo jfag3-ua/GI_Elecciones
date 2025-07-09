@@ -21,10 +21,23 @@
     @if (isset($votado) && $votado)
         <p class="notice">Tu voto ya ha sido <b>registrado</b>. Gracias por participar.</p>
     @else
-        <p class="notice">Selecciona el candidato que deseas votar. Solo puedes seleccionar una opción. Una vez confirmado, tu voto será registrado de forma <b>definitiva</b>.</p>
+        <p class="notice">Selecciona la elección y el candidato que deseas votar. Solo puedes seleccionar una opción. Una vez confirmado, tu voto será registrado de forma <b>definitiva</b>.</p>
         <article>
+            <!-- Formulario para elegir la elección -->
+            <form method="GET" action="{{ route('voto') }}">
+                <label for="eleccion_id">Elige la elección:</label>
+                <select name="eleccion_id" id="eleccion_id" onchange="this.form.submit()">
+                    <option value="">-- Selecciona una elección --</option>
+                    @foreach($elecciones as $eleccion)
+                        <option value="{{ $eleccion->id }}" {{ (isset($eleccion_id) && $eleccion_id == $eleccion->id) ? 'selected' : '' }}>{{ $eleccion->nombre }}</option>
+                    @endforeach
+                </select>
+            </form>
+
+            @if(isset($eleccion_id) && $eleccion_id && count($candidaturas) > 0)
             <form id="form-voto" method="POST" action="{{ route('guardar.voto') }}">
                 @csrf
+                <input type="hidden" name="eleccion_id" value="{{ $eleccion_id }}">
                 <h4>Selecciona tu opción de voto:</h4>
                 <p>
                     @foreach ($candidaturas as $candidatura)
@@ -36,6 +49,9 @@
                 </p>
                 <button id="confirmar" type="button" disabled>Confirmar voto</button>
             </form>
+            @elseif(isset($eleccion_id) && $eleccion_id)
+                <p>No hay candidaturas disponibles para la elección seleccionada.</p>
+            @endif
         </article>
 
         <script>
